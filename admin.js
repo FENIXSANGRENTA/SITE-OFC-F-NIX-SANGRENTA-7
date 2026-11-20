@@ -27,9 +27,6 @@
     noticias: { title:"NOTÍCIAS", desc:"Publique avisos no espaço oficial da F7.", table:"noticias_f7", fields:[
       ["titulo","Título","text",true],["conteudo","Conteúdo","textarea",true],["imagem_url","URL da imagem (opcional)","url",false],["publicado","Publicado","checkbox",false]
     ], columns:["titulo","conteudo","publicado","criado_em"] },
-    inscricoes: { title:"INSCRIÇÕES", desc:"Analise os pedidos de entrada na F7.", table:"inscricoes_f7", fields:[
-      ["nick","Nick","text",false],["jogador_id","ID do jogador","text",false],["idade","Idade","number",false],["nivel_conta","Nível da conta","number",false],["cidade","Cidade","text",false],["whatsapp","WhatsApp","text",false],["funcao","Função","text",false],["patente","Patente","text",false],["disponibilidade_guerras","Disponibilidade","text",false],["atividade","Atividade","text",false],["acompanha_grupo","Acompanha grupo","text",false],["line_organizada","Line organizada","text",false],["status","Status","select",false,["Pendente","Aprovado","Reprovado"]]
-    ], columns:["nick","jogador_id","idade","nivel_conta","cidade","whatsapp","funcao","patente","status"], readOnly:true },
     advertencias: { title:"ADVERTÊNCIAS", desc:"Registre ocorrências administrativas dos membros.", table:"advertencias_f7", fields:[
       ["membro_id","ID do membro (opcional)","text",false],["nick","Nick","text",true],["motivo","Motivo","textarea",true],["data_advertencia","Data","date",true]
     ], columns:["nick","motivo","data_advertencia"] }
