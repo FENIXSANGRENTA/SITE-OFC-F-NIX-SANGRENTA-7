@@ -109,13 +109,19 @@
     pushButton.disabled=true;
     window.OneSignalDeferred.push(async function(OneSignal){
       try {
-        await OneSignal.Slidedown.promptPush();
+        const permissionGranted = await OneSignal.Notifications.requestPermission();
+        if(!permissionGranted) {
+          message("A permissão de notificações não foi concedida. Confira as permissões do Chrome.",true);
+          pushButton.disabled=false;
+          return;
+        }
+        await OneSignal.User.PushSubscription.optIn();
         if(OneSignal.User.PushSubscription.optedIn){
           OneSignal.User.addTag("f7_admin","true");
           message("Notificações ativadas neste dispositivo!");
           pushButton.textContent="NOTIFICAÇÕES ATIVADAS";
         } else {
-          message("A permissão ainda não foi concedida. Confira as permissões de notificação do navegador.",true);
+          message("O Chrome permitiu notificações, mas o OneSignal ainda não confirmou a inscrição. Atualize a página e tente novamente.",true);
           pushButton.disabled=false;
         }
       } catch(err) {
