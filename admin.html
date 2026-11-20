@@ -1,4 +1,33 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090909"><title>Administração | F7</title><link rel="stylesheet" href="style.css"></head>
-<body><header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">F7</span><span>FENIX <b>SANGRENTA 7</b></span></a><a class="back-link" href="index.html">← VOLTAR AO SITE</a></header>
-<main class="page-shell"><section class="admin-box"><p class="eyebrow">ACESSO RESTRITO</p><h1 style="font-size:48px;margin:10px 0">PAINEL <span style="color:#ff3038">F7</span></h1><p style="font-size:12px;color:#999;line-height:1.7">A autenticação administrativa será ativada após a configuração do Supabase e o cadastro dos administradores autorizados.</p><div class="notice">Esta página ainda não possui login ativo. Não informe senhas aqui.</div><p style="margin-top:22px"><a class="button button-outline" href="index.html">VOLTAR AO SITE</a></p></section></main></body></html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090909"><title>Painel administrativo | F7</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="admin.js" defer></script>
+</head>
+<body class="admin-page">
+<header class="topbar"><a class="brand" href="index.html"><img class="brand-logo" src="https://i.imgur.com/JfKpSTn.png" alt="F7"><span>FENIX <b>SANGRENTA 7</b></span></a><a class="back-link" href="index.html">← VOLTAR AO SITE</a></header>
+<main class="admin-wrap">
+<section id="loginPanel" class="admin-box">
+<p class="eyebrow">ACESSO RESTRITO</p><h1 class="admin-title">PAINEL <span>F7</span></h1>
+<p class="admin-subtitle">Entre com o e-mail e a senha cadastrados no Supabase.</p>
+<form id="loginForm">
+<label class="field"><span>E-MAIL</span><input id="email" type="email" autocomplete="username" required></label>
+<label class="field"><span>SENHA</span><input id="password" type="password" autocomplete="current-password" required></label>
+<button class="button button-red admin-submit" type="submit">ENTRAR NO PAINEL</button>
+<p id="loginMessage" class="admin-message" role="status"></p>
+</form>
+</section>
+<section id="dashboard" hidden>
+<div class="admin-heading"><div><p class="eyebrow">CENTRAL DE CONTROLE</p><h1 class="admin-title">GESTÃO <span>F7</span></h1><p id="welcome" class="admin-subtitle"></p></div><button id="logoutButton" class="button button-outline">SAIR</button></div>
+<nav id="adminTabs" class="admin-tabs" aria-label="Seções administrativas"></nav>
+<div class="admin-toolbar"><div><h2 id="sectionTitle">MEMBROS</h2><p id="sectionDescription"></p></div><button id="addButton" class="button button-red">+ ADICIONAR</button></div>
+<div id="editor" class="admin-editor" hidden></div>
+<div id="tableWrap" class="admin-table-wrap"><p class="admin-loading">Carregando dados...</p></div>
+<p id="dashboardMessage" class="admin-message" role="status"></p>
+</section>
+</main>
+</body></html>
