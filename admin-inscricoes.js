@@ -6,7 +6,7 @@
     return;
   }
   const db = window.supabase.createClient(window.F7_SUPABASE_URL, window.F7_SUPABASE_KEY);
-  let filter = "Todas";
+  let filter = "Pendente";
   let rows = [];
   let siteMembers = [];
   const esc = value => String(value ?? "—").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -40,7 +40,7 @@
   }
   const normalizedStatus = value => String(value || "Pendente").trim().toLowerCase();
   function render() {
-    const visible=filter==="Todas" ? rows : rows.filter(r=>normalizedStatus(r.status)===normalizedStatus(filter));
+    const visible=rows.filter(r=>normalizedStatus(r.status)===normalizedStatus(filter));
     const countPending=rows.filter(r=>(r.status||"Pendente")==="Pendente").length;
     const countApproved=rows.filter(r=>r.status==="Aprovado").length;
     const countRejected=rows.filter(r=>r.status==="Reprovado").length;
