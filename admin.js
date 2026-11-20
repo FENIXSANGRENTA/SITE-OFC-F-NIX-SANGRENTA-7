@@ -82,6 +82,8 @@
     const s=sections[active];
     $("sectionTitle").textContent=s.title;$("sectionDescription").textContent=s.desc;
     $("addButton").hidden=!!s.readOnly;
+    $("addButton").textContent=active==="membros"?"+ ADICIONAR MEMBRO":"+ ADICIONAR";
+    $("addButton").setAttribute("aria-label",active==="membros"?"Adicionar membro ao site":"Adicionar registro");
     $("tableWrap").innerHTML='<p class="admin-loading">Carregando dados...</p>';
     const {data,error}=await db.from(s.table).select("*").limit(100);
     if(error){$("tableWrap").innerHTML='<p class="admin-error">Erro ao carregar: '+escapeHtml(error.message)+'</p>';return;}
