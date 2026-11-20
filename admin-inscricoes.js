@@ -40,7 +40,10 @@
   }
   const normalizedStatus = value => String(value || "Pendente").trim().toLowerCase();
   function render() {
-    const visible=rows.filter(r=>normalizedStatus(r.status)===normalizedStatus(filter));
+    const isAlreadyAdded = r => siteMembers.some(m=>(r.jogador_id && m.id_jogo && String(m.id_jogo)===String(r.jogador_id)) || (m.nick && String(m.nick).trim().toLowerCase()===String(r.nick||"").trim().toLowerCase()));
+    const visible=filter==="AguardandoAdicao"
+      ? rows.filter(r=>normalizedStatus(r.status)==="aprovado" && !isAlreadyAdded(r))
+      : rows.filter(r=>normalizedStatus(r.status)===normalizedStatus(filter));
     const countPending=rows.filter(r=>(r.status||"Pendente")==="Pendente").length;
     const countApproved=rows.filter(r=>r.status==="Aprovado").length;
     const countRejected=rows.filter(r=>r.status==="Reprovado").length;
@@ -53,7 +56,7 @@
       ["nick","Nick"],["jogador_id","ID do jogador"],["idade","Idade"],["nivel_conta","Nível"],["cidade","Cidade"],["whatsapp","WhatsApp"],["funcao","Função"],["patente","Patente"],["disponibilidade_guerras","Disponibilidade"],["atividade","Atividade"],["acompanha_grupo","Acompanha grupo"],["line_organizada","Line organizada"],["status","Status"]
     ];
     $("applications").innerHTML=stats+visible.map((r,i)=>{
-      const alreadyAdded=siteMembers.some(m=>(r.jogador_id && m.id_jogo && String(m.id_jogo)===String(r.jogador_id)) || (m.nick && String(m.nick).trim().toLowerCase()===String(r.nick||"").trim().toLowerCase()));
+      const alreadyAdded=isAlreadyAdded(r);
       const addButton=normalizedStatus(r.status)==="aprovado" ? (alreadyAdded?'<span class="application-status">JÁ NO SITE</span>':'<button data-add-member="'+esc(r.id)+'">ADICIONAR AO SITE</button>') : "";
       const whatsappDigits=String(r.whatsapp||"").replace(/\D/g,"");
       const whatsappNumber=whatsappDigits ? (whatsappDigits.startsWith("55") ? whatsappDigits : "55"+whatsappDigits) : "";
