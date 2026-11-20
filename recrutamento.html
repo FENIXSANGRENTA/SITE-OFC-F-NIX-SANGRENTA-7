@@ -30,7 +30,7 @@
         <label class="field"><span>PATENTE ATUAL *</span><input name="patente" maxlength="40" required placeholder="Sua patente"></label>
       </div>
       <h2 class="form-section-title">03 / DISPONIBILIDADE E EQUIPE</h2>
-      <label class="field"><span>DISPONIBILIDADE PARA GUERRAS *</span><select name="disponibilidade_guerras" required><option value="">Selecione</option><option>Todos os dias</option><option>Durante a semana</option><option>Finais de semana</option><option>Depende da semana</option><option>Não tenho disponibilidade fixa</option></select></label>
+      <label class="field"><span>VOCÊ TEM DISPONIBILIDADE PARA PARTICIPAR DAS GUERRAS? *</span><select name="disponibilidade_guerras" required><option value="">Selecione</option><option value="true">Sim</option><option value="false">Não</option></select></label>
       <label class="field"><span>COM QUE FREQUÊNCIA VOCÊ JOGA? *</span><select name="atividade" required><option value="">Selecione</option><option>Todos os dias</option><option>Quase todos os dias</option><option>Algumas vezes na semana</option><option>Apenas finais de semana</option></select></label>
       <label class="field"><span>ACOMPANHA O GRUPO / AVISOS DA ORGANIZAÇÃO? *</span><select name="acompanha_grupo" required><option value="">Selecione</option><option>Sim</option><option>Não</option></select></label>
       <label class="field"><span>JÁ JOGA EM UMA LINE ORGANIZADA? *</span><select name="line_organizada" required><option value="">Selecione</option><option>Sim</option><option>Não</option><option>Estou procurando uma</option></select></label>
@@ -64,7 +64,7 @@
       whatsapp:String(fd.get("whatsapp")).trim(),
       funcao:String(fd.get("funcao")).trim(),
       patente:String(fd.get("patente")).trim(),
-      disponibilidade_guerras:fd.get("disponibilidade_guerras"),
+      disponibilidade_guerras:fd.get("disponibilidade_guerras")==="true",
       atividade:fd.get("atividade"),
       acompanha_grupo:fd.get("acompanha_grupo")==="Sim",
       line_organizada:fd.get("line_organizada")==="Sim",
