@@ -1,5 +1,86 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090909"><title>Recrutamento | F7</title><link rel="stylesheet" href="style.css"></head>
-<body><header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">F7</span><span>FENIX <b>SANGRENTA 7</b></span></a><a class="back-link" href="index.html">← VOLTAR AO SITE</a></header>
-<main class="page-shell"><div class="form-card"><p class="eyebrow">VENHA PARA A EQUIPE</p><h1>RECRUTAMENTO <span style="color:#ff3038">F7</span></h1><p>Estamos preparando o processo oficial de inscrições da FENIX SANGRENTA 7.</p><div class="notice">O formulário ainda está em configuração. As inscrições serão liberadas assim que o banco de dados e os critérios oficiais forem definidos.</div><p style="margin-top:25px"><a class="button button-red" href="index.html">VOLTAR À PÁGINA INICIAL</a></p></div></main>
-<footer class="footer"><span class="brand"><span class="brand-mark">F7</span><span>FENIX <b>SANGRENTA 7</b></span></span><p>© FENIX SANGRENTA 7</p></footer></body></html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090909"><meta name="description" content="Inscreva-se para fazer parte da FENIX SANGRENTA 7.">
+  <title>Recrutamento | F7</title><link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="index.html"><img class="brand-logo" src="https://i.imgur.com/JfKpSTn.png" alt="Logo F7"><span>FENIX <b>SANGRENTA 7</b></span></a><a class="back-link" href="index.html">← VOLTAR AO SITE</a></header>
+<main class="page-shell">
+  <div class="form-card recruitment-card">
+    <p class="eyebrow">VENHA PARA A EQUIPE</p><h1>RECRUTAMENTO <span style="color:#ff3038">F7</span></h1>
+    <p>Preencha seus dados com atenção. Sua inscrição será enviada para a equipe administrativa e ficará aguardando avaliação.</p>
+    <div class="notice">Envie informações verdadeiras. A inscrição não garante entrada automática na organização.</div>
+    <form id="recruitmentForm">
+      <h2 class="form-section-title">01 / DADOS DO JOGADOR</h2>
+      <label class="field"><span>NICK NO FREE FIRE *</span><input name="nick" maxlength="40" required placeholder="Seu nick no jogo"></label>
+      <label class="field"><span>ID DO JOGADOR *</span><input name="jogador_id" inputmode="numeric" maxlength="20" required placeholder="Seu ID do Free Fire"></label>
+      <div class="form-two">
+        <label class="field"><span>IDADE *</span><input name="idade" type="number" min="1" max="99" required placeholder="Sua idade"></label>
+        <label class="field"><span>NÍVEL DA CONTA *</span><input name="nivel_conta" type="number" min="1" max="500" required placeholder="Nível atual"></label>
+      </div>
+      <label class="field"><span>CIDADE / ESTADO *</span><input name="cidade" maxlength="80" required placeholder="Ex.: Passos Maia - SC"></label>
+      <label class="field"><span>WHATSAPP COM DDD *</span><input name="whatsapp" type="tel" maxlength="25" required placeholder="(00) 00000-0000"></label>
+      <h2 class="form-section-title">02 / PERFIL NO JOGO</h2>
+      <div class="form-two">
+        <label class="field"><span>FUNÇÃO *</span><input name="funcao" maxlength="40" required placeholder="Sua função / estilo de jogo"></label>
+        <label class="field"><span>PATENTE ATUAL *</span><input name="patente" maxlength="40" required placeholder="Sua patente"></label>
+      </div>
+      <h2 class="form-section-title">03 / DISPONIBILIDADE E EQUIPE</h2>
+      <label class="field"><span>DISPONIBILIDADE PARA GUERRAS *</span><select name="disponibilidade_guerras" required><option value="">Selecione</option><option>Todos os dias</option><option>Durante a semana</option><option>Finais de semana</option><option>Depende da semana</option><option>Não tenho disponibilidade fixa</option></select></label>
+      <label class="field"><span>COM QUE FREQUÊNCIA VOCÊ JOGA? *</span><select name="atividade" required><option value="">Selecione</option><option>Todos os dias</option><option>Quase todos os dias</option><option>Algumas vezes na semana</option><option>Apenas finais de semana</option></select></label>
+      <label class="field"><span>ACOMPANHA O GRUPO / AVISOS DA ORGANIZAÇÃO? *</span><select name="acompanha_grupo" required><option value="">Selecione</option><option>Sim</option><option>Não</option></select></label>
+      <label class="field"><span>JÁ JOGA EM UMA LINE ORGANIZADA? *</span><select name="line_organizada" required><option value="">Selecione</option><option>Sim</option><option>Não</option><option>Estou procurando uma</option></select></label>
+      <button class="button button-red recruitment-submit" type="submit">ENVIAR INSCRIÇÃO</button>
+      <p id="formMessage" class="admin-message" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</main>
+<footer class="footer"><span class="brand"><span class="brand-mark">F7</span><span>FENIX <b>SANGRENTA 7</b></span></span><p>© FENIX SANGRENTA 7</p></footer>
+<script>
+(() => {
+  const form=document.getElementById("recruitmentForm");
+  const message=document.getElementById("formMessage");
+  if(!window.supabase || !window.F7_SUPABASE_URL || !window.F7_SUPABASE_KEY){
+    message.textContent="O formulário não conseguiu carregar. Atualize a página mais tarde.";
+    form.querySelector("button").disabled=true;return;
+  }
+  const db=window.supabase.createClient(window.F7_SUPABASE_URL,window.F7_SUPABASE_KEY);
+  form.addEventListener("submit",async event=>{
+    event.preventDefault();
+    const button=form.querySelector("button");
+    button.disabled=true;button.textContent="ENVIANDO...";
+    message.className="admin-message";message.textContent="Enviando sua inscrição...";
+    const fd=new FormData(form);
+    const payload={
+      nick:String(fd.get("nick")).trim(),
+      jogador_id:String(fd.get("jogador_id")).trim(),
+      idade:Number(fd.get("idade")),
+      nivel_conta:Number(fd.get("nivel_conta")),
+      cidade:String(fd.get("cidade")).trim(),
+      whatsapp:String(fd.get("whatsapp")).trim(),
+      funcao:String(fd.get("funcao")).trim(),
+      patente:String(fd.get("patente")).trim(),
+      disponibilidade_guerras:fd.get("disponibilidade_guerras"),
+      atividade:fd.get("atividade"),
+      acompanha_grupo:fd.get("acompanha_grupo"),
+      line_organizada:fd.get("line_organizada"),
+      status:"Pendente"
+    };
+    const {error}=await db.from("inscricoes_f7").insert(payload);
+    if(error){
+      message.className="admin-message error";
+      message.textContent="Não foi possível enviar: "+error.message;
+      button.disabled=false;button.textContent="TENTAR NOVAMENTE";return;
+    }
+    form.reset();
+    message.className="admin-message";
+    message.textContent="Inscrição enviada com sucesso! Ela ficará como PENDENTE até a avaliação da administração.";
+    button.textContent="INSCRIÇÃO ENVIADA";
+  });
+})();
+</script>
+</body></html>
