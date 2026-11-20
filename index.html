@@ -7,7 +7,10 @@
   <meta name="description" content="FENIX SANGRENTA 7 — Organização de Free Fire.">
   <title>F7 | FENIX SANGRENTA 7</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="script.js" defer></script>
+  <script src="site-data.js" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -42,22 +45,22 @@
 
     <section class="section section-dark" id="membros">
       <div class="section-heading"><p class="eyebrow">NOSSA EQUIPE</p><h2>MEMBROS <span>F7</span></h2></div>
-      <div class="empty-state"><span class="empty-icon">✦</span><h3>ELENCO EM ORGANIZAÇÃO</h3><p>Os integrantes oficiais da F7 serão apresentados aqui.</p></div>
+      <div id="publicMembers" class="public-grid"><div class="empty-state"><span class="empty-icon">✦</span><h3>CARREGANDO ELENCO</h3><p>Buscando os integrantes oficiais da F7...</p></div></div>
     </section>
 
     <section class="section" id="linhas">
       <div class="section-heading"><p class="eyebrow">ORGANIZAÇÃO</p><h2>NOSSAS <span>LINES</span></h2></div>
-      <div class="empty-state"><span class="empty-icon">⌁</span><h3>LINHAS EM ORGANIZAÇÃO</h3><p>Em breve, conheça as formações e os jogadores de cada line.</p></div>
+      <div id="publicLines" class="public-grid"><div class="empty-state"><span class="empty-icon">⌁</span><h3>CARREGANDO LINES</h3><p>Buscando as formações da F7...</p></div></div>
     </section>
 
     <section class="section section-dark" id="resultados">
       <div class="section-heading"><p class="eyebrow">DESEMPENHO</p><h2>RESULTADOS <span>& CONQUISTAS</span></h2></div>
-      <div class="empty-state"><span class="empty-icon">♛</span><h3>PRÓXIMOS DESAFIOS</h3><p>Os resultados das guerras e competições aparecerão nesta área.</p></div>
+      <div id="publicResults" class="public-grid"><div class="empty-state"><span class="empty-icon">♛</span><h3>CARREGANDO RESULTADOS</h3><p>Buscando os resultados...</p></div></div><div id="publicChampionships" class="public-grid public-secondary"></div>
     </section>
 
     <section class="section" id="noticias">
       <div class="section-heading"><p class="eyebrow">FIQUE POR DENTRO</p><h2>NOTÍCIAS <span>F7</span></h2></div>
-      <div class="empty-state"><span class="empty-icon">✧</span><h3>NENHUM AVISO PUBLICADO</h3><p>As novidades oficiais da organização serão divulgadas aqui.</p></div>
+      <div id="publicNews" class="public-grid"><div class="empty-state"><span class="empty-icon">✧</span><h3>CARREGANDO NOTÍCIAS</h3><p>Buscando os avisos oficiais...</p></div></div>
     </section>
 
     <section class="join-banner"><p class="eyebrow">SUA PRÓXIMA HISTÓRIA COMEÇA AQUI</p><h2>FAÇA PARTE DA <span>F7</span></h2><a class="button button-red" href="recrutamento.html">ACESSAR RECRUTAMENTO</a></section>
