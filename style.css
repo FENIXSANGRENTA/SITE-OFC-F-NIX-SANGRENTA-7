@@ -218,3 +218,29 @@
 .admin-page .application-top .row-actions .whatsapp-button:hover{
  background:#0a8b50;border-color:#20c77a;
 }
+
+
+/* Elenco F7: cards de jogadores com identidade competitiva */
+#publicMembers{grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:20px;max-width:1120px}
+.member-card{position:relative;isolation:isolate;overflow:hidden;min-height:290px;padding:21px;background:linear-gradient(145deg,#171922 0%,#101116 58%,#190b10 100%);border:1px solid #30313b;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.24);transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+.member-card:before{content:"";position:absolute;z-index:-1;top:-75px;right:-65px;width:190px;height:190px;border-radius:50%;background:rgba(240,24,45,.13);filter:blur(35px)}
+.member-card:after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#ff344b,#8b0b1a)}
+.member-card:hover{transform:translateY(-6px);border-color:rgba(240,24,45,.65);box-shadow:0 18px 38px rgba(0,0,0,.38),0 0 24px rgba(240,24,45,.08)}
+.member-card-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.member-number,.member-status,.member-kicker{font-size:9px;font-weight:900;letter-spacing:1.5px}
+.member-number{color:#777e8d}
+.member-status{display:inline-flex;align-items:center;gap:6px;color:#67d99b}
+.member-status i{width:6px;height:6px;border-radius:50%;background:#35d681;box-shadow:0 0 10px #35d681}
+.member-avatar{display:grid;place-items:center;width:66px;height:66px;margin:22px 0 15px;border:1px solid rgba(255,65,82,.55);border-radius:16px;background:linear-gradient(145deg,#3a1019,#17131a);color:#fff;font:900 25px 'Barlow Condensed',sans-serif;letter-spacing:1px;box-shadow:inset 0 0 20px rgba(240,24,45,.12),0 8px 20px rgba(0,0,0,.22)}
+.member-kicker{margin:0 0 5px;color:#f04a5c}
+.member-identity h3{margin:0;color:#fff;font:900 27px 'Barlow Condensed',sans-serif;letter-spacing:.6px;overflow-wrap:anywhere}
+.member-realname{margin:4px 0 0!important;color:#858b98!important;font-size:11px!important}
+.member-divider{height:1px;margin:17px 0;background:linear-gradient(90deg,rgba(240,24,45,.65),rgba(255,255,255,.06) 75%,transparent)}
+.member-tags{display:flex;flex-wrap:wrap;gap:7px;min-height:27px}
+.member-tag{display:inline-flex;align-items:center;min-height:25px;padding:5px 9px;border:1px solid #3b3e49;border-radius:6px;background:#1b1e28;color:#d9dce4;font-size:9px;font-weight:800;letter-spacing:.6px;text-transform:uppercase}
+.member-tag.role-tag{border-color:rgba(240,24,45,.42);background:rgba(240,24,45,.12);color:#ff8792}
+.member-game-id{display:flex;justify-content:space-between;gap:12px;margin:16px 0 0;color:#777e8d;font-size:9px;font-weight:800;letter-spacing:1px}
+.member-game-id strong{color:#e4e6ec;font-size:11px;letter-spacing:.4px}
+.member-watermark{position:absolute;right:14px;bottom:-22px;color:rgba(255,255,255,.025);font:900 100px 'Barlow Condensed',sans-serif;letter-spacing:-5px;pointer-events:none}
+@media(max-width:600px){#publicMembers{grid-template-columns:1fr;max-width:390px}.member-card{min-height:270px}}
+@media(prefers-reduced-motion:reduce){.member-card{transition:none}.member-card:hover{transform:none}}
