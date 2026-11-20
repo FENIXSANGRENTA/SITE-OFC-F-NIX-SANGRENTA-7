@@ -132,3 +132,5 @@
  .admin-page #applications > .application-card,
  .admin-page #applications > .empty-state{animation:none;transition:none}
 }
+/* Mantém os detalhes recolhidos até o administrador clicar no botão. */
+.admin-page .application-details[hidden]{display:none!important}
