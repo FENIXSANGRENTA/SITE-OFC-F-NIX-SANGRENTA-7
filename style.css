@@ -146,3 +146,64 @@
 .admin-page .row-actions .whatsapp-button:hover{
  background:#087b46;border-color:#20c77a;color:#fff;
 }
+
+
+/* Alinhamento dos controles em cada inscrição */
+.admin-page .application-top{
+ display:grid;
+ grid-template-columns:minmax(170px,1fr) minmax(0,auto);
+ align-items:center;
+ gap:18px 24px;
+}
+.admin-page .application-top>div:first-child{min-width:0}
+.admin-page .application-top h3{overflow-wrap:anywhere}
+.admin-page .application-top .row-actions{
+ display:flex;
+ align-items:center;
+ justify-content:flex-end;
+ flex-wrap:wrap;
+ gap:8px;
+ white-space:normal;
+}
+.admin-page .application-top .row-actions button,
+.admin-page .application-top .row-actions .whatsapp-button{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ min-height:36px;
+ margin:0;
+ padding:9px 12px;
+ border-radius:7px;
+ font:800 10px Arial,Helvetica,sans-serif;
+ line-height:1.2;
+ letter-spacing:.35px;
+ text-align:center;
+ white-space:nowrap;
+}
+.admin-page .application-top .row-actions .whatsapp-button{
+ background:#087443;
+ border:1px solid #15965a;
+ color:#fff;
+}
+.admin-page .application-top .row-actions .whatsapp-button:hover{
+ background:#0a8b50;
+ border-color:#20c77a;
+}
+@media(max-width:760px){
+ .admin-page .application-top{
+  grid-template-columns:minmax(0,1fr);
+  gap:14px;
+ }
+ .admin-page .application-top .row-actions{
+  justify-content:flex-start;
+  width:100%;
+ }
+}
+@media(max-width:420px){
+ .admin-page .application-top .row-actions button,
+ .admin-page .application-top .row-actions .whatsapp-button{
+  flex:1 1 calc(50% - 8px);
+  white-space:normal;
+  min-width:0;
+ }
+}
