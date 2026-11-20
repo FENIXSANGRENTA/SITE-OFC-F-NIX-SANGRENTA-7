@@ -72,9 +72,12 @@
     if(error){setMessage("dashboardMessage",error.message,true);return;}
     setMessage("dashboardMessage","Inscrição marcada como "+status+".");loadRows();
   }
-  async function removeRow(id) {
+  async function removeRow(id, row=null) {
     if(!confirm("Tem certeza que deseja excluir este registro?")) return;
-    const {error}=await db.from(sections[active].table).delete().eq("id",id);
+    let query=db.from(sections[active].table).delete();
+    if(active==="vinculacoes" && row) query=query.eq("line_id",row.line_id).eq("membro_id",row.membro_id);
+    else query=query.eq("id",id);
+    const {error}=await query;
     if(error){setMessage("dashboardMessage",error.message,true);return;}
     setMessage("dashboardMessage","Registro excluído.");loadRows();
   }
@@ -88,10 +91,10 @@
     if(!data?.length){$("tableWrap").innerHTML='<div class="empty-state"><h3>NENHUM REGISTRO</h3><p>Use o botão Adicionar para cadastrar o primeiro.</p></div>';return;}
     const cols=s.columns;
     let html='<div class="admin-table-scroll"><table class="data-table"><thead><tr>'+cols.map(c=>'<th>'+escapeHtml(c.replaceAll("_"," "))+'</th>').join("")+'<th>AÇÕES</th></tr></thead><tbody>';
-    html+=data.map(row=>'<tr>'+cols.map(c=>'<td>'+escapeHtml(pretty(row[c]))+'</td>').join("")+'<td class="row-actions">'+(active==="inscricoes"?'<button data-status="Aprovado" data-id="'+row.id+'">Aprovar</button><button data-status="Reprovado" data-id="'+row.id+'">Reprovar</button>':'<button data-edit="'+row.id+'">Editar</button>')+'<button class="danger" data-delete="'+row.id+'">Excluir</button></td></tr>').join("");
+    html+=data.map(row=>'<tr>'+cols.map(c=>'<td>'+escapeHtml(pretty(row[c]))+'</td>').join("")+'<td class="row-actions">'+(active==="inscricoes"?'<button data-status="Aprovado" data-id="'+row.id+'">Aprovar</button><button data-status="Reprovado" data-id="'+row.id+'">Reprovar</button>':(active==="vinculacoes"?'':'<button data-edit="'+row.id+'">Editar</button>'))+'<button class="danger" data-delete="'+(active==="vinculacoes"?encodeURIComponent(JSON.stringify(row)):row.id)+'">Excluir</button></td></tr>').join("");
     html+='</tbody></table></div>';$("tableWrap").innerHTML=html;
     $("tableWrap").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>openEditor(data.find(r=>String(r.id)===b.dataset.edit))));
-    $("tableWrap").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>removeRow(b.dataset.delete)));
+    $("tableWrap").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>active==="vinculacoes"?removeRow(null,JSON.parse(decodeURIComponent(b.dataset.delete))):removeRow(b.dataset.delete)));
     $("tableWrap").querySelectorAll("[data-status]").forEach(b=>b.addEventListener("click",()=>setStatus(b.dataset.id,b.dataset.status)));
   }
   async function showDashboard(user) {
