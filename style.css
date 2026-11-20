@@ -134,3 +134,15 @@
 }
 /* Mantém os detalhes recolhidos até o administrador clicar no botão. */
 .admin-page .application-details[hidden]{display:none!important}
+
+
+/* Botão de contato WhatsApp nas inscrições */
+.admin-page .row-actions .whatsapp-button{
+ display:inline-flex;align-items:center;justify-content:center;
+ margin:2px;padding:8px 10px;border:1px solid #167c49;border-radius:6px;
+ background:#075e36;color:#fff;font-size:10px;font-weight:800;
+ letter-spacing:.25px;text-decoration:none;white-space:nowrap;
+}
+.admin-page .row-actions .whatsapp-button:hover{
+ background:#087b46;border-color:#20c77a;color:#fff;
+}
