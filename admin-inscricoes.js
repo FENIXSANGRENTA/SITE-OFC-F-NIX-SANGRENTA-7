@@ -104,32 +104,49 @@
   $("logoutButton").addEventListener("click",async()=>{await db.auth.signOut();$("dashboard").hidden=true;$("loginPanel").hidden=false;$("password").value="";});
   $("refreshButton").addEventListener("click",load);
   const pushButton=$("enablePushButton");
-  if(pushButton) pushButton.addEventListener("click",()=>{
-    if(!window.OneSignalDeferred){message("O serviço de notificações ainda está carregando.",true);return;}
-    pushButton.disabled=true;
+  if(pushButton) {
+    window.OneSignalDeferred=window.OneSignalDeferred||[];
     window.OneSignalDeferred.push(async function(OneSignal){
       try {
-        const permissionGranted = await OneSignal.Notifications.requestPermission();
-        if(!permissionGranted) {
-          message("A permissão de notificações não foi concedida. Confira as permissões do Chrome.",true);
-          pushButton.disabled=false;
-          return;
-        }
-        await OneSignal.User.PushSubscription.optIn();
-        if(OneSignal.User.PushSubscription.optedIn){
-          OneSignal.User.addTag("f7_admin","true");
-          message("Notificações ativadas neste dispositivo!");
+        if(OneSignal.User.PushSubscription.optedIn) {
           pushButton.textContent="NOTIFICAÇÕES ATIVADAS";
+          pushButton.disabled=true;
+          await OneSignal.User.addTag("f7_admin","true");
         } else {
-          message("O Chrome permitiu notificações, mas o OneSignal ainda não confirmou a inscrição. Atualize a página e tente novamente.",true);
+          pushButton.textContent="ATIVAR NOTIFICAÇÕES NESTE CELULAR";
           pushButton.disabled=false;
         }
       } catch(err) {
-        message("Não foi possível ativar as notificações: "+(err.message||err),true);
         pushButton.disabled=false;
       }
     });
-  });
+    pushButton.addEventListener("click",()=>{
+      pushButton.disabled=true;
+      window.OneSignalDeferred.push(async function(OneSignal){
+        try {
+          const permissionGranted=await OneSignal.Notifications.requestPermission();
+          if(!permissionGranted) {
+            message("A permissão de notificações não foi concedida. Confira as permissões do Chrome.",true);
+            pushButton.disabled=false;
+            return;
+          }
+          await OneSignal.User.PushSubscription.optIn();
+          if(OneSignal.User.PushSubscription.optedIn) {
+            await OneSignal.User.addTag("f7_admin","true");
+            message("Notificações ativadas neste dispositivo!");
+            pushButton.textContent="NOTIFICAÇÕES ATIVADAS";
+            pushButton.disabled=true;
+          } else {
+            message("O OneSignal ainda não confirmou a inscrição. Aguarde alguns segundos e atualize a página.",true);
+            pushButton.disabled=false;
+          }
+        } catch(err) {
+          message("Não foi possível ativar as notificações: "+(err.message||err),true);
+          pushButton.disabled=false;
+        }
+      });
+    });
+  }
   document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));render();}));
   db.auth.getSession().then(({data})=>{if(data.session)authorize(data.session.user);});
 })();
