@@ -35,14 +35,18 @@
   }
   function render() {
     const visible=filter==="Todas" ? rows : rows.filter(r=>r.status===filter);
+    const countPending=rows.filter(r=>(r.status||"Pendente")==="Pendente").length;
+    const countApproved=rows.filter(r=>r.status==="Aprovado").length;
+    const countRejected=rows.filter(r=>r.status==="Reprovado").length;
+    const stats='<div class="admin-stats"><div class="admin-stat"><span>Total recebidas</span><strong>'+rows.length+'</strong></div><div class="admin-stat pending"><span>Pendentes</span><strong>'+countPending+'</strong></div><div class="admin-stat approved"><span>Aprovadas</span><strong>'+countApproved+'</strong></div><div class="admin-stat rejected"><span>Reprovadas</span><strong>'+countRejected+'</strong></div></div>';
     if(!visible.length) {
-      $("applications").innerHTML='<div class="empty-state"><h3>NENHUMA INSCRIÇÃO</h3><p>Não há candidatos nesta categoria.</p></div>';
+      $("applications").innerHTML=stats+'<div class="empty-state"><h3>NENHUMA INSCRIÇÃO</h3><p>Não há candidatos nesta categoria.</p></div>';
       return;
     }
     const fields=[
       ["nick","Nick"],["jogador_id","ID do jogador"],["idade","Idade"],["nivel_conta","Nível"],["cidade","Cidade"],["whatsapp","WhatsApp"],["funcao","Função"],["patente","Patente"],["disponibilidade_guerras","Disponibilidade"],["atividade","Atividade"],["acompanha_grupo","Acompanha grupo"],["line_organizada","Line organizada"],["status","Status"]
     ];
-    $("applications").innerHTML=visible.map((r,i)=>'<article class="application-card"><div class="application-top"><div><p class="public-meta">INSCRIÇÃO #'+esc(r.id)+'</p><h3>'+esc(r.nick)+'</h3><p class="application-status">'+esc(r.status||"Pendente")+'</p></div><div class="row-actions"><button data-detail="'+i+'">VER DETALHES</button><button data-approve="'+esc(r.id)+'">APROVAR</button><button data-reject="'+esc(r.id)+'">REPROVAR</button><button class="danger" data-delete="'+esc(r.id)+'">EXCLUIR</button></div></div><div class="application-details" id="details-'+i+'" hidden>'+fields.map(([key,label])=>'<div><b>'+label+'</b><span>'+esc(pretty(r[key]))+'</span></div>').join("")+'</div></article>').join("");
+    $("applications").innerHTML=stats+visible.map((r,i)=>'<article class="application-card"><div class="application-top"><div><p class="public-meta">INSCRIÇÃO #'+esc(r.id)+'</p><h3>'+esc(r.nick)+'</h3><p class="application-status">'+esc(r.status||"Pendente")+'</p></div><div class="row-actions"><button data-detail="'+i+'">VER DETALHES</button><button data-approve="'+esc(r.id)+'">APROVAR</button><button data-reject="'+esc(r.id)+'">REPROVAR</button><button class="danger" data-delete="'+esc(r.id)+'">EXCLUIR</button></div></div><div class="application-details" id="details-'+i+'" hidden>'+fields.map(([key,label])=>'<div><b>'+label+'</b><span>'+esc(pretty(r[key]))+'</span></div>').join("")+'</div></article>').join("");
     $("applications").querySelectorAll("[data-detail]").forEach(b=>b.addEventListener("click",()=>{const el=$("details-"+b.dataset.detail);el.hidden=!el.hidden;b.textContent=el.hidden?"VER DETALHES":"OCULTAR DETALHES";}));
     $("applications").querySelectorAll("[data-approve]").forEach(b=>b.addEventListener("click",()=>setStatus(b.dataset.approve,"Aprovado")));
     $("applications").querySelectorAll("[data-reject]").forEach(b=>b.addEventListener("click",()=>setStatus(b.dataset.reject,"Reprovado")));
