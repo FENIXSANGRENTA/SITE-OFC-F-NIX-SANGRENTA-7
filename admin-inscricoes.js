@@ -34,13 +34,13 @@
       $("applications").innerHTML='<p class="admin-error">Erro ao carregar: '+esc(error.message)+'</p>';
       return;
     }
-    if(membersError) { $("applications").innerHTML='<p class="admin-error">Erro ao verificar membros do site: '+esc(membersError.message)+'</p>'; return; }
     rows=data||[];
-    siteMembers=members||[];
+    siteMembers=membersError ? [] : (members||[]);
     render();
   }
+  const normalizedStatus = value => String(value || "Pendente").trim().toLowerCase();
   function render() {
-    const visible=filter==="Todas" ? rows : rows.filter(r=>r.status===filter);
+    const visible=filter==="Todas" ? rows : rows.filter(r=>normalizedStatus(r.status)===normalizedStatus(filter));
     const countPending=rows.filter(r=>(r.status||"Pendente")==="Pendente").length;
     const countApproved=rows.filter(r=>r.status==="Aprovado").length;
     const countRejected=rows.filter(r=>r.status==="Reprovado").length;
@@ -54,8 +54,8 @@
     ];
     $("applications").innerHTML=stats+visible.map((r,i)=>{
       const alreadyAdded=siteMembers.some(m=>(r.jogador_id && m.id_jogo && String(m.id_jogo)===String(r.jogador_id)) || (m.nick && String(m.nick).trim().toLowerCase()===String(r.nick||"").trim().toLowerCase()));
-      const addButton=r.status==="Aprovado" ? (alreadyAdded?'<span class="application-status">JÁ NO SITE</span>':'<button data-add-member="'+esc(r.id)+'">ADICIONAR AO SITE</button>') : "";
-      return '<article class="application-card"><div class="application-top"><div><p class="public-meta">INSCRIÇÃO #'+esc(r.id)+'</p><h3>'+esc(r.nick)+'</h3><p class="application-status">'+esc(r.status||"Pendente")+'</p></div><div class="row-actions"><button data-detail="'+i+'">VER DETALHES</button>'+(r.status==="Aprovado"||r.status==="Reprovado"?'':'<button data-approve="'+esc(r.id)+'">APROVAR</button><button data-reject="'+esc(r.id)+'">REPROVAR</button>')+addButton+'<button class="danger" data-delete="'+esc(r.id)+'">EXCLUIR</button></div></div><div class="application-details" id="details-'+i+'" hidden>'+fields.map(([key,label])=>'<div><b>'+label+'</b><span>'+esc(pretty(r[key]))+'</span></div>').join("")+'</div></article>';
+      const addButton=normalizedStatus(r.status)==="aprovado" ? (alreadyAdded?'<span class="application-status">JÁ NO SITE</span>':'<button data-add-member="'+esc(r.id)+'">ADICIONAR AO SITE</button>') : "";
+      return '<article class="application-card"><div class="application-top"><div><p class="public-meta">INSCRIÇÃO #'+esc(r.id)+'</p><h3>'+esc(r.nick)+'</h3><p class="application-status">'+esc(r.status||"Pendente")+'</p></div><div class="row-actions"><button data-detail="'+i+'">VER DETALHES</button>'+(normalizedStatus(r.status)==="aprovado"||normalizedStatus(r.status)==="reprovado"?'':'<button data-approve="'+esc(r.id)+'">APROVAR</button><button data-reject="'+esc(r.id)+'">REPROVAR</button>')+addButton+'<button class="danger" data-delete="'+esc(r.id)+'">EXCLUIR</button></div></div><div class="application-details" id="details-'+i+'" hidden>'+fields.map(([key,label])=>'<div><b>'+label+'</b><span>'+esc(pretty(r[key]))+'</span></div>').join("")+'</div></article>';
     }).join("");
     $("applications").querySelectorAll("[data-detail]").forEach(b=>b.addEventListener("click",()=>{const el=$("details-"+b.dataset.detail);el.hidden=!el.hidden;b.textContent=el.hidden?"VER DETALHES":"OCULTAR DETALHES";}));
     $("applications").querySelectorAll("[data-approve]").forEach(b=>b.addEventListener("click",()=>setStatus(b.dataset.approve,"Aprovado")));
@@ -71,7 +71,7 @@
   }
   async function addMemberToSite(id) {
     const applicant=rows.find(r=>String(r.id)===String(id));
-    if(!applicant || applicant.status!=="Aprovado") return;
+    if(!applicant || normalizedStatus(applicant.status)!=="aprovado") return;
     const duplicate=siteMembers.some(m=>(applicant.jogador_id && m.id_jogo && String(m.id_jogo)===String(applicant.jogador_id)) || (m.nick && String(m.nick).trim().toLowerCase()===String(applicant.nick||"").trim().toLowerCase()));
     if(duplicate){message("Este jogador já está cadastrado no site.",true);return;}
     const payload={nome:applicant.nick,nick:applicant.nick,id_jogo:applicant.jogador_id||null,patente:applicant.patente||null,funcao:applicant.funcao||null,ativo:true};
