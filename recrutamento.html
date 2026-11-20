@@ -66,8 +66,8 @@
       patente:String(fd.get("patente")).trim(),
       disponibilidade_guerras:fd.get("disponibilidade_guerras"),
       atividade:fd.get("atividade"),
-      acompanha_grupo:fd.get("acompanha_grupo"),
-      line_organizada:fd.get("line_organizada"),
+      acompanha_grupo:fd.get("acompanha_grupo")==="Sim",
+      line_organizada:fd.get("line_organizada")==="Sim",
       status:"Pendente"
     };
     const {error}=await db.from("inscricoes_f7").insert(payload);
