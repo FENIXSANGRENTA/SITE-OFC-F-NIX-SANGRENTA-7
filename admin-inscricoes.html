@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#090909">
 <title>Painel de inscrições | F7</title>
 <link rel="stylesheet" href="style.css?v=20261120">
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>window.OneSignalDeferred=window.OneSignalDeferred||[];OneSignalDeferred.push(async function(OneSignal){await OneSignal.init({appId:"5718faa6-5e14-42f1-b98a-0c22758c4109"});});</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="admin-inscricoes.js?v=aguardando-add-1" defer></script>
@@ -32,7 +34,7 @@
 <div><p class="eyebrow">CENTRAL DE RECRUTAMENTO</p><h1 class="admin-title">ANÁLISE DE <span>INSCRIÇÕES</span></h1><p id="welcome" class="admin-subtitle"></p></div>
 <button id="logoutButton" class="button button-outline">SAIR</button>
 </div>
-<div class="admin-toolbar"><div><h2>INSCRIÇÕES RECEBIDAS</h2><p>Confira os dados e defina o status de cada candidato.</p></div><button id="refreshButton" class="button button-red">ATUALIZAR</button></div>
+<div class="admin-toolbar"><div><h2>INSCRIÇÕES RECEBIDAS</h2><p>Confira os dados e defina o status de cada candidato.</p></div><div class="admin-toolbar-actions"><button id="enablePushButton" class="button button-outline" type="button">ATIVAR NOTIFICAÇÕES NESTE CELULAR</button><button id="refreshButton" class="button button-red">ATUALIZAR</button></div></div>
 <div class="admin-filters">
 <button class="admin-tab active" data-filter="Pendente">PENDENTES</button>
 <button class="admin-tab" data-filter="AguardandoAdicao">FALTAM ADICIONAR</button>
