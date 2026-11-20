@@ -83,7 +83,7 @@
     $("sectionTitle").textContent=s.title;$("sectionDescription").textContent=s.desc;
     $("addButton").hidden=!!s.readOnly;
     $("tableWrap").innerHTML='<p class="admin-loading">Carregando dados...</p>';
-    const {data,error}=await db.from(s.table).select("*").order("created_at",{ascending:false}).limit(100).catch(async()=>await db.from(s.table).select("*").limit(100));
+    const {data,error}=await db.from(s.table).select("*").limit(100);
     if(error){$("tableWrap").innerHTML='<p class="admin-error">Erro ao carregar: '+escapeHtml(error.message)+'</p>';return;}
     if(!data?.length){$("tableWrap").innerHTML='<div class="empty-state"><h3>NENHUM REGISTRO</h3><p>Use o botão Adicionar para cadastrar o primeiro.</p></div>';return;}
     const cols=s.columns;
