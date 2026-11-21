@@ -4,6 +4,7 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#090909"><meta name="description" content="Inscreva-se para fazer parte da FENIX SANGRENTA 7.">
   <title>Recrutamento | F7</title><link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="f7-improvements.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 </head>
@@ -16,6 +17,7 @@
     <div class="notice">Envie informações verdadeiras. A inscrição não garante entrada automática na organização.</div>
     <form id="recruitmentForm">
       <h2 class="form-section-title">01 / DADOS DO JOGADOR</h2>
+      <label class="field"><span>NOME COMPLETO *</span><input name="nome_completo" maxlength="100" required placeholder="Seu nome completo"></label>
       <label class="field"><span>NICK NO FREE FIRE *</span><input name="nick" maxlength="40" required placeholder="Seu nick no jogo"></label>
       <label class="field"><span>ID DO JOGADOR *</span><input name="jogador_id" inputmode="numeric" maxlength="20" required placeholder="Seu ID do Free Fire"></label>
       <div class="form-two">
@@ -26,8 +28,8 @@
       <label class="field"><span>WHATSAPP COM DDD *</span><input name="whatsapp" type="tel" maxlength="25" required placeholder="(00) 00000-0000"></label>
       <h2 class="form-section-title">02 / PERFIL NO JOGO</h2>
       <div class="form-two">
-        <label class="field"><span>FUNÇÃO *</span><select name="funcao" required><option value="">Selecione sua função</option><option value="Rush">Rush</option><option value="Cura">Cura</option><option value="Gás">Gás</option><option value="Suporte">Suporte</option></select></label>
-        <label class="field"><span>PATENTE ATUAL *</span><input name="patente" maxlength="40" required placeholder="Sua patente"></label>
+        <label class="field"><span>FUNÇÃO *</span><select name="funcao" required><option value="">Selecione sua função</option><option value="Cura">Cura</option><option value="Gás">Gás</option><option value="Rush">Rush</option><option value="Suporte">Suporte</option></select></label>
+        <label class="field"><span>PATENTE ATUAL *</span><select name="patente" required><option value="">Selecione sua patente</option><optgroup label="Bronze"><option>Bronze I</option><option>Bronze II</option><option>Bronze III</option></optgroup><optgroup label="Prata"><option>Prata I</option><option>Prata II</option><option>Prata III</option></optgroup><optgroup label="Ouro"><option>Ouro I</option><option>Ouro II</option><option>Ouro III</option><option>Ouro IV</option></optgroup><optgroup label="Platina"><option>Platina I</option><option>Platina II</option><option>Platina III</option><option>Platina IV</option></optgroup><optgroup label="Diamante"><option>Diamante I</option><option>Diamante II</option><option>Diamante III</option><option>Diamante IV</option><option>Diamante V</option></optgroup><option>Mestre</option><option>Elite</option><option>Desafiante</option></select></label>
       </div>
       <h2 class="form-section-title">03 / DISPONIBILIDADE E EQUIPE</h2>
       <label class="field"><span>VOCÊ TEM DISPONIBILIDADE PARA PARTICIPAR DAS GUERRAS? *</span><select name="disponibilidade_guerras" required><option value="">Selecione</option><option value="true">Sim</option><option value="false">Não</option></select></label>
@@ -56,6 +58,7 @@
     message.className="admin-message";message.textContent="Enviando sua inscrição...";
     const fd=new FormData(form);
     const payload={
+      nome_completo:String(fd.get("nome_completo")).trim(),
       nick:String(fd.get("nick")).trim(),
       jogador_id:String(fd.get("jogador_id")).trim(),
       idade:Number(fd.get("idade")),
