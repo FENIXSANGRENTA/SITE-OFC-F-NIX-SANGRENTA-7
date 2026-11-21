@@ -13,7 +13,7 @@
   let roleFilter = "";
   const esc = value => String(value ?? "—").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const pretty = value => value === true ? "Sim" : value === false ? "Não" : (value ?? "—");
-  const normalizeSearch = value => String(value ?? "").normalize("NFKC").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const normalizeSearch = value => String(value ?? "").normalize("NFKC").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
   const roleKey = value => {
     const v=normalizeSearch(value);
     if(v.includes("cura")) return "cura";
@@ -68,7 +68,7 @@
     const tools='<div class="member-tools application-tools"><label><span>PROCURAR POR NICK</span><input id="applicationSearch" type="search" value="'+esc(searchTerm)+'" placeholder="Digite parte do nick, mesmo personalizado"></label><label><span>FILTRAR POR FUNÇÃO</span><select id="applicationRole"><option value="">Todas as funções</option><option value="cura" '+(roleFilter==="cura"?'selected':'')+'>Cura</option><option value="gas" '+(roleFilter==="gas"?'selected':'')+'>Gás</option><option value="rush" '+(roleFilter==="rush"?'selected':'')+'>Rush</option><option value="suporte" '+(roleFilter==="suporte"?'selected':'')+'>Suporte</option></select></label></div>';
     if(!visible.length) {
       $("applications").innerHTML=stats+tools+'<div class="empty-state"><h3>NENHUMA INSCRIÇÃO</h3><p>Não há candidatos com esta busca, função ou categoria.</p></div>';
-      $("applicationSearch").addEventListener("input",e=>{searchTerm=e.target.value;render();});
+      $("applicationSearch").addEventListener("input",e=>{const pos=e.target.selectionStart;searchTerm=e.target.value;render();const next=$("applicationSearch");next.focus();next.setSelectionRange(pos,pos);});
       $("applicationRole").addEventListener("change",e=>{roleFilter=e.target.value;render();});
       return;
     }
@@ -101,7 +101,7 @@
   async function addMemberToSite(id) {
     const applicant=rows.find(r=>String(r.id)===String(id));
     if(!applicant || normalizedStatus(applicant.status)!=="aprovado") return;
-    const duplicate=siteMembers.some(m=>(applicant.jogador_id && m.id_jogo && String(m.id_jogo)===String(applicant.jogador_id)) || (m.nick && String(m.nick).trim().toLowerCase()===String(applicant.nick||"").trim().toLowerCase()));
+    const duplicate=siteMembers.some(m=>(applicant.jogador_id && m.id_jogo && String(m.id_jogo)===String(applicant.jogador_id)) || (m.nick && normalizeSearch(m.nick)===normalizeSearch(applicant.nick)));
     if(duplicate){message("Este jogador já está cadastrado no site.",true);return;}
     const payload={nome:applicant.nome_completo||applicant.nick,nick:applicant.nick,id_jogo:applicant.jogador_id||null,patente:applicant.patente||null,funcao:applicant.funcao||null,ativo:true};
     const {error}=await db.from("membros_f7").insert(payload);
