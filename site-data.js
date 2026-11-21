@@ -6,7 +6,7 @@
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const empty = (id, title, msg) => { const el=$(id); if(el) el.innerHTML='<div class="empty-state"><span class="empty-icon">✦</span><h3>'+esc(title)+'</h3><p>'+esc(msg)+'</p></div>'; };
   const card = (title, meta, desc, extra="") => '<article class="public-card">'+extra+'<h3>'+esc(title)+'</h3>'+(meta?'<p class="public-meta">'+esc(meta)+'</p>':'')+(desc?'<p>'+esc(desc)+'</p>':'')+'</article>';
-  const normalizeSearch = value => String(value ?? "").normalize("NFKC").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const normalizeSearch = value => String(value ?? "").normalize("NFKC").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
   const roleKey = value => {
     const v=normalizeSearch(value);
     if(v.includes("cura")) return "cura";
@@ -36,7 +36,7 @@
       }
       $("publicMembers").innerHTML=filtered.map((m,i)=>{
         const nick=m.nick||m.nome||"Jogador F7";
-        const initials=String(nick).trim().split(/\\s+/).slice(0,2).map(part=>part[0]||"").join("").toUpperCase();
+        const initials=String(nick).trim().split(/\s+/).slice(0,2).map(part=>part[0]||"").join("").toUpperCase();
         return '<article class="member-card"><div class="member-card-head"><span class="member-number">F7 / '+String(i+1).padStart(2,"0")+'</span><span class="member-status"><i></i> ATIVO</span></div><div class="member-avatar">'+esc(initials||"F7")+'</div><div class="member-identity"><p class="member-kicker">INTEGRANTE OFICIAL</p><h3>'+esc(nick)+'</h3>'+(m.nome&&m.nick&&m.nome!==m.nick?'<p class="member-realname">'+esc(m.nome)+'</p>':'')+'</div><div class="member-divider"></div><div class="member-tags">'+(m.funcao?'<span class="member-tag role-tag">'+esc(m.funcao)+'</span>':'')+(m.patente?'<span class="member-tag">'+esc(m.patente)+'</span>':'')+'</div>'+(m.id_jogo?'<p class="member-game-id">ID FREE FIRE <strong>'+esc(m.id_jogo)+'</strong></p>':'')+'<span class="member-watermark">F7</span></article>';
       }).join("");
     };
