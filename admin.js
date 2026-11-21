@@ -10,7 +10,7 @@
   const db = clientLib.createClient(window.F7_SUPABASE_URL, window.F7_SUPABASE_KEY);
   const sections = {
     membros: { title:"MEMBROS", desc:"Gerencie o elenco oficial.", table:"membros_f7", fields:[
-      ["nome","Nome","text",true],["nick","Nick no jogo","text",true],["id_jogo","ID do jogador","text",false],["patente","Patente","text",false],["funcao","Função","select",false,["Cura","Rush","Full Gás","Coringa","Capitão"]],["ativo","Ativo","checkbox",false]
+      ["nome","Nome","text",true],["nick","Nick no jogo","text",true],["id_jogo","ID do jogador","text",false],["patente","Patente","text",false],["funcao","Função","select",false,["Cura","Gás","Rush","Suporte","Full Gás","Coringa","Capitão"]],["ativo","Ativo","checkbox",false]
     ], columns:["nome","nick","id_jogo","patente","funcao","ativo"] },
     lines: { title:"LINES", desc:"Crie as equipes e organize as formações.", table:"lines_f7", fields:[
       ["nome","Nome da Line","text",true],["descricao","Descrição","textarea",false],["ativa","Ativa","checkbox",false]
@@ -70,13 +70,46 @@
     setMessage("dashboardMessage","Inscrição marcada como "+status+".");loadRows();
   }
   async function removeRow(id, row=null) {
-    if(!confirm("Tem certeza que deseja excluir este registro?")) return;
+    if(!confirm(active==="membros"?"Este membro deixará de aparecer no site oficial. Deseja continuar?":"Tem certeza que deseja excluir este registro?")) return;
+    if(active==="membros") {
+      const {error}=await db.from("membros_f7").update({ativo:false}).eq("id",id);
+      if(error){setMessage("dashboardMessage",error.message,true);return;}
+      setMessage("dashboardMessage","Membro removido do elenco público. O histórico foi preservado.");
+      await loadRows();return;
+    }
     let query=db.from(sections[active].table).delete();
     if(active==="vinculacoes" && row) query=query.eq("line_id",row.line_id).eq("membro_id",row.membro_id);
     else query=query.eq("id",id);
     const {error}=await query;
     if(error){setMessage("dashboardMessage",error.message,true);return;}
     setMessage("dashboardMessage","Registro excluído.");loadRows();
+  }
+  const normalizeSearch = value => String(value ?? "").normalize("NFKC").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const roleKey = value => {
+    const v=normalizeSearch(value);
+    if(v.includes("cura")) return "cura";
+    if(v.includes("gas")) return "gas";
+    if(v.includes("rush")) return "rush";
+    if(v.includes("suporte")) return "suporte";
+    return v;
+  };
+  function renderMemberCards(data) {
+    $("tableWrap").innerHTML='<div class="member-tools admin-member-tools"><label><span>PROCURAR POR NICK</span><input id="adminMemberSearch" type="search" placeholder="Digite parte do nick, mesmo personalizado"></label><label><span>FILTRAR POR FUNÇÃO</span><select id="adminMemberRole"><option value="">Todas as funções</option><option value="cura">Cura</option><option value="gas">Gás / Full Gás</option><option value="rush">Rush</option><option value="suporte">Suporte</option></select></label><label><span>STATUS</span><select id="adminMemberStatus"><option value="ativos">Somente ativos</option><option value="todos">Todos</option><option value="inativos">Somente inativos</option></select></label></div><div id="adminMemberCards" class="admin-member-grid"></div>';
+    const search=$("adminMemberSearch"), role=$("adminMemberRole"), status=$("adminMemberStatus"), grid=$("adminMemberCards");
+    const render=()=>{
+      const term=normalizeSearch(search.value), selected=role.value, state=status.value;
+      const filtered=data.filter(m=>{
+        const text=normalizeSearch(m.nick||"").includes(term)||normalizeSearch(m.nome||"").includes(term);
+        const roleMatch=!selected||roleKey(m.funcao)===selected;
+        const statusMatch=state==="todos"||(state==="ativos"&&m.ativo!==false)||(state==="inativos"&&m.ativo===false);
+        return text&&roleMatch&&statusMatch;
+      });
+      if(!filtered.length){grid.innerHTML='<div class="empty-state"><h3>NENHUM MEMBRO ENCONTRADO</h3><p>Altere a busca ou os filtros para ver outros jogadores.</p></div>';return;}
+      grid.innerHTML=filtered.map(m=>'<article class="admin-member-card"><div class="admin-member-top"><span class="admin-member-tag">F7 • ELENCO</span><span class="admin-member-state '+(m.ativo===false?'inactive':'')+'">'+(m.ativo===false?'INATIVO':'ATIVO')+'</span></div><h3>'+escapeHtml(m.nick||m.nome||"Jogador")+'</h3>'+(m.nome&&m.nick&&m.nome!==m.nick?'<p class="admin-member-realname">'+escapeHtml(m.nome)+'</p>':'')+'<div class="admin-member-info"><span><b>FUNÇÃO</b>'+escapeHtml(pretty(m.funcao))+'</span><span><b>PATENTE</b>'+escapeHtml(pretty(m.patente))+'</span><span><b>ID FREE FIRE</b>'+escapeHtml(pretty(m.id_jogo))+'</span></div><div class="row-actions"><button data-edit="'+m.id+'">EDITAR</button>'+(m.ativo===false?'':'<button class="danger" data-delete="'+m.id+'">REMOVER DO SITE</button>')+'</div></article>').join("");
+      grid.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>openEditor(data.find(m=>String(m.id)===b.dataset.edit))));
+      grid.querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>removeRow(b.dataset.delete)));
+    };
+    search.addEventListener("input",render);role.addEventListener("change",render);status.addEventListener("change",render);render();
   }
   async function loadRows() {
     const s=sections[active];
@@ -85,9 +118,10 @@
     $("addButton").textContent=active==="membros"?"+ ADICIONAR MEMBRO":"+ ADICIONAR";
     $("addButton").setAttribute("aria-label",active==="membros"?"Adicionar membro ao site":"Adicionar registro");
     $("tableWrap").innerHTML='<p class="admin-loading">Carregando dados...</p>';
-    const {data,error}=await db.from(s.table).select("*").limit(100);
+    const {data,error}=await db.from(s.table).select("*").limit(200);
     if(error){$("tableWrap").innerHTML='<p class="admin-error">Erro ao carregar: '+escapeHtml(error.message)+'</p>';return;}
     if(!data?.length){$("tableWrap").innerHTML='<div class="empty-state"><h3>NENHUM REGISTRO</h3><p>Use o botão Adicionar para cadastrar o primeiro.</p></div>';return;}
+    if(active==="membros"){renderMemberCards(data);return;}
     const cols=s.columns;
     let html='<div class="admin-table-scroll"><table class="data-table"><thead><tr>'+cols.map(c=>'<th>'+escapeHtml(c.replaceAll("_"," "))+'</th>').join("")+'<th>AÇÕES</th></tr></thead><tbody>';
     html+=data.map(row=>'<tr>'+cols.map(c=>'<td>'+escapeHtml(pretty(row[c]))+'</td>').join("")+'<td class="row-actions">'+(active==="inscricoes"?'<button data-status="Aprovado" data-id="'+row.id+'">Aprovar</button><button data-status="Reprovado" data-id="'+row.id+'">Reprovar</button>':(active==="vinculacoes"?'':'<button data-edit="'+row.id+'">Editar</button>'))+'<button class="danger" data-delete="'+(active==="vinculacoes"?encodeURIComponent(JSON.stringify(row)):row.id)+'">Excluir</button></td></tr>').join("");
