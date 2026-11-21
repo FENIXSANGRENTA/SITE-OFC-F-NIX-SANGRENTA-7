@@ -17,7 +17,8 @@
   };
   async function loadMembers(){
     const {data,error}=await db.from("membros_f7").select("id,nome,nick,id_jogo,patente,funcao,ativo").eq("ativo",true).limit(200);
-    if(error){empty("publicMembers","ELENCO INDISPONÍVEL","Não foi possível carregar os membros agora.");return;}
+    if(error){const count=$("activeMemberCount");if(count)count.textContent="CONTAGEM INDISPONÍVEL";empty("publicMembers","ELENCO INDISPONÍVEL","Não foi possível carregar os membros agora.");return;}
+    const count=$("activeMemberCount");if(count)count.textContent=(data?.length||0)+" MEMBROS ATIVOS";
     if(!data?.length){empty("publicMembers","ELENCO EM ORGANIZAÇÃO","Os integrantes oficiais da F7 serão apresentados aqui.");return;}
     const search=$("publicMemberSearch"), role=$("publicMemberRole");
     const render=()=>{
