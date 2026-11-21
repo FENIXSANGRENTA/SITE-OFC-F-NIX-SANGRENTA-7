@@ -1,0 +1,32 @@
+/* Melhorias de busca, filtros e apresentação do elenco F7 */
+.member-tools{
+  max-width:1050px;margin:26px auto 0;display:grid;
+  grid-template-columns:minmax(220px,2fr) minmax(190px,1fr);gap:14px;
+  padding:16px;background:#101219;border:1px solid #292d38;border-radius:12px
+}
+.member-tools label{display:block;min-width:0}
+.member-tools label>span{display:block;margin:0 0 8px;color:#ff747d;font-size:10px;font-weight:800;letter-spacing:1px}
+.member-tools input,.member-tools select{
+  width:100%;min-height:44px;padding:11px 13px;background:#090b10;color:#f5f5f5;
+  border:1px solid #343946;border-radius:8px;font:13px Arial,Helvetica,sans-serif;outline:none
+}
+.member-tools input:focus,.member-tools select:focus{border-color:#f0182d;box-shadow:0 0 0 3px rgba(240,24,45,.12)}
+.member-tools input::placeholder{color:#737987}
+.application-tools{max-width:none;margin:18px 0 20px}
+.application-realname{margin:3px 0 0;color:#b8bdc8;font-size:12px}
+.admin-member-tools{max-width:none;margin:0 0 18px}
+.admin-member-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.admin-member-card{position:relative;min-width:0;padding:19px;background:linear-gradient(145deg,#171a22,#101218);border:1px solid #2b303c;border-top:2px solid #f0182d;border-radius:12px;overflow:hidden}
+.admin-member-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.admin-member-tag{font-size:9px;font-weight:900;letter-spacing:1.3px;color:#ff737d}
+.admin-member-state{font-size:9px;font-weight:900;letter-spacing:1px;color:#35d995}
+.admin-member-state.inactive{color:#a0a5b0}
+.admin-member-card h3{margin:15px 0 3px;font:800 24px Arial,Helvetica,sans-serif;overflow-wrap:anywhere}
+.admin-member-realname{margin:0;color:#aeb4c1;font-size:12px}
+.admin-member-info{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:17px 0;padding:14px 0;border-top:1px solid #2a2e39;border-bottom:1px solid #2a2e39}
+.admin-member-info span{display:flex;flex-direction:column;gap:5px;min-width:0;color:#e6e8ed;font-size:12px;overflow-wrap:anywhere}
+.admin-member-info b{color:#858c9b;font-size:9px;letter-spacing:1px}
+.admin-member-card .row-actions{display:flex;flex-wrap:wrap;gap:7px}
+.admin-member-card .row-actions button{border-radius:6px;padding:8px 10px}
+.admin-member-card .row-actions button.danger{background:rgba(240,24,45,.08)}
+@media(max-width:650px){.member-tools{grid-template-columns:1fr;padding:13px}.admin-member-grid{grid-template-columns:1fr}}
