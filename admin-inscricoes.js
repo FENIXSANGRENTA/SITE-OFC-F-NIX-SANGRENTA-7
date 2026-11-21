@@ -9,8 +9,19 @@
   let filter = "Pendente";
   let rows = [];
   let siteMembers = [];
+  let searchTerm = "";
+  let roleFilter = "";
   const esc = value => String(value ?? "—").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const pretty = value => value === true ? "Sim" : value === false ? "Não" : (value ?? "—");
+  const normalizeSearch = value => String(value ?? "").normalize("NFKC").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const roleKey = value => {
+    const v=normalizeSearch(value);
+    if(v.includes("cura")) return "cura";
+    if(v.includes("gas")) return "gas";
+    if(v.includes("rush")) return "rush";
+    if(v.includes("suporte")) return "suporte";
+    return v;
+  };
   const message = (value,bad=false) => { $("dashboardMessage").textContent=value; $("dashboardMessage").classList.toggle("error",bad); };
   async function authorize(user) {
     const {data,error}=await db.from("admins_f7").select("nome").eq("user_id",user.id).maybeSingle();
@@ -28,7 +39,7 @@
     $("applications").innerHTML='<p class="admin-loading">Carregando inscrições...</p>';
     const [{data,error},{data:members,error:membersError}]=await Promise.all([
       db.from("inscricoes_f7").select("*").order("id",{ascending:false}).limit(200),
-      db.from("membros_f7").select("nick,id_jogo")
+      db.from("membros_f7").select("id,nick,id_jogo,ativo")
     ]);
     if(error) {
       $("applications").innerHTML='<p class="admin-error">Erro ao carregar: '+esc(error.message)+'</p>';
@@ -40,30 +51,41 @@
   }
   const normalizedStatus = value => String(value || "Pendente").trim().toLowerCase();
   function render() {
-    const isAlreadyAdded = r => siteMembers.some(m=>(r.jogador_id && m.id_jogo && String(m.id_jogo)===String(r.jogador_id)) || (m.nick && String(m.nick).trim().toLowerCase()===String(r.nick||"").trim().toLowerCase()));
-    const visible=filter==="AguardandoAdicao"
+    const isAlreadyAdded = r => siteMembers.some(m=>(r.jogador_id && m.id_jogo && String(m.id_jogo)===String(r.jogador_id) && m.ativo!==false) || (m.nick && normalizeSearch(m.nick)===normalizeSearch(r.nick) && m.ativo!==false));
+    const baseVisible=filter==="AguardandoAdicao"
       ? rows.filter(r=>normalizedStatus(r.status)==="aprovado" && !isAlreadyAdded(r))
       : rows.filter(r=>normalizedStatus(r.status)===normalizedStatus(filter));
+    const term=normalizeSearch(searchTerm);
+    const visible=baseVisible.filter(r=>{
+      const textMatch=!term||normalizeSearch(r.nick).includes(term)||normalizeSearch(r.nome_completo).includes(term);
+      const roleMatch=!roleFilter||roleKey(r.funcao)===roleFilter;
+      return textMatch&&roleMatch;
+    });
     const countPending=rows.filter(r=>(r.status||"Pendente")==="Pendente").length;
     const countApproved=rows.filter(r=>r.status==="Aprovado").length;
     const countRejected=rows.filter(r=>r.status==="Reprovado").length;
     const stats='<div class="admin-stats"><div class="admin-stat"><span>Total recebidas</span><strong>'+rows.length+'</strong></div><div class="admin-stat pending"><span>Pendentes</span><strong>'+countPending+'</strong></div><div class="admin-stat approved"><span>Aprovadas</span><strong>'+countApproved+'</strong></div><div class="admin-stat rejected"><span>Reprovadas</span><strong>'+countRejected+'</strong></div></div>';
+    const tools='<div class="member-tools application-tools"><label><span>PROCURAR POR NICK</span><input id="applicationSearch" type="search" value="'+esc(searchTerm)+'" placeholder="Digite parte do nick, mesmo personalizado"></label><label><span>FILTRAR POR FUNÇÃO</span><select id="applicationRole"><option value="">Todas as funções</option><option value="cura" '+(roleFilter==="cura"?'selected':'')+'>Cura</option><option value="gas" '+(roleFilter==="gas"?'selected':'')+'>Gás</option><option value="rush" '+(roleFilter==="rush"?'selected':'')+'>Rush</option><option value="suporte" '+(roleFilter==="suporte"?'selected':'')+'>Suporte</option></select></label></div>';
     if(!visible.length) {
-      $("applications").innerHTML=stats+'<div class="empty-state"><h3>NENHUMA INSCRIÇÃO</h3><p>Não há candidatos nesta categoria.</p></div>';
+      $("applications").innerHTML=stats+tools+'<div class="empty-state"><h3>NENHUMA INSCRIÇÃO</h3><p>Não há candidatos com esta busca, função ou categoria.</p></div>';
+      $("applicationSearch").addEventListener("input",e=>{searchTerm=e.target.value;render();});
+      $("applicationRole").addEventListener("change",e=>{roleFilter=e.target.value;render();});
       return;
     }
     const fields=[
-      ["nick","Nick"],["jogador_id","ID do jogador"],["idade","Idade"],["nivel_conta","Nível"],["cidade","Cidade"],["whatsapp","WhatsApp"],["funcao","Função"],["patente","Patente"],["disponibilidade_guerras","Disponibilidade"],["atividade","Atividade"],["acompanha_grupo","Acompanha grupo"],["line_organizada","Line organizada"],["status","Status"]
+      ["nome_completo","Nome completo"],["nick","Nick"],["jogador_id","ID do jogador"],["idade","Idade"],["nivel_conta","Nível"],["cidade","Cidade"],["whatsapp","WhatsApp"],["funcao","Função"],["patente","Patente"],["disponibilidade_guerras","Disponibilidade"],["atividade","Atividade"],["acompanha_grupo","Acompanha grupo"],["line_organizada","Line organizada"],["status","Status"]
     ];
-    $("applications").innerHTML=stats+visible.map((r,i)=>{
+    $("applications").innerHTML=stats+tools+visible.map((r,i)=>{
       const alreadyAdded=isAlreadyAdded(r);
       const addButton=normalizedStatus(r.status)==="aprovado" ? (alreadyAdded?'<span class="application-status">JÁ NO SITE</span>':'<button data-add-member="'+esc(r.id)+'">ADICIONAR AO SITE</button>') : "";
       const whatsappDigits=String(r.whatsapp||"").replace(/\D/g,"");
       const whatsappNumber=whatsappDigits ? (whatsappDigits.startsWith("55") ? whatsappDigits : "55"+whatsappDigits) : "";
       const approvalMessage="Olá, "+(r.nick||"jogador")+"! Sua inscrição na FENIX SANGRENTA 7 (F7) foi aprovada! Seja bem-vindo(a) à família F7. Em breve passaremos as próximas orientações. HONRA. UNIÃO. GUERRA.";
       const whatsappButton=whatsappNumber && normalizedStatus(r.status)==="aprovado" ? '<a class="whatsapp-button" href="https://api.whatsapp.com/send?phone='+whatsappNumber+'&text='+encodeURIComponent(approvalMessage)+'" target="_blank" rel="noopener noreferrer">ENVIAR APROVAÇÃO PELO WHATSAPP</a>' : "";
-      return '<article class="application-card"><div class="application-top"><div><p class="public-meta">INSCRIÇÃO #'+esc(r.id)+'</p><h3>'+esc(r.nick)+'</h3><p class="application-status">'+esc(r.status||"Pendente")+'</p></div><div class="row-actions">'+whatsappButton+'<button data-detail="'+i+'">VER DETALHES</button>'+(normalizedStatus(r.status)==="aprovado"||normalizedStatus(r.status)==="reprovado"?'':'<button data-approve="'+esc(r.id)+'">APROVAR</button><button data-reject="'+esc(r.id)+'">REPROVAR</button>')+addButton+'<button class="danger" data-delete="'+esc(r.id)+'">EXCLUIR</button></div></div><div class="application-details" id="details-'+i+'" hidden>'+fields.map(([key,label])=>'<div><b>'+label+'</b><span>'+esc(pretty(r[key]))+'</span></div>').join("")+'</div></article>';
+      return '<article class="application-card"><div class="application-top"><div><p class="public-meta">INSCRIÇÃO #'+esc(r.id)+'</p><h3>'+esc(r.nick)+'</h3>'+(r.nome_completo?'<p class="application-realname">'+esc(r.nome_completo)+'</p>':'')+'<p class="application-status">'+esc(r.status||"Pendente")+'</p></div><div class="row-actions">'+whatsappButton+'<button data-detail="'+i+'">VER DETALHES</button>'+(normalizedStatus(r.status)==="aprovado"||normalizedStatus(r.status)==="reprovado"?'':'<button data-approve="'+esc(r.id)+'">APROVAR</button><button data-reject="'+esc(r.id)+'">REPROVAR</button>')+addButton+'<button class="danger" data-delete="'+esc(r.id)+'">EXCLUIR</button></div></div><div class="application-details" id="details-'+i+'" hidden>'+fields.map(([key,label])=>'<div><b>'+label+'</b><span>'+esc(pretty(r[key]))+'</span></div>').join("")+'</div></article>';
     }).join("");
+    $("applicationSearch").addEventListener("input",e=>{searchTerm=e.target.value;render();});
+    $("applicationRole").addEventListener("change",e=>{roleFilter=e.target.value;render();});
     $("applications").querySelectorAll("[data-detail]").forEach(b=>b.addEventListener("click",()=>{const el=$("details-"+b.dataset.detail);el.hidden=!el.hidden;b.textContent=el.hidden?"VER DETALHES":"OCULTAR DETALHES";}));
     $("applications").querySelectorAll("[data-approve]").forEach(b=>b.addEventListener("click",()=>setStatus(b.dataset.approve,"Aprovado")));
     $("applications").querySelectorAll("[data-reject]").forEach(b=>b.addEventListener("click",()=>setStatus(b.dataset.reject,"Reprovado")));
@@ -81,17 +103,30 @@
     if(!applicant || normalizedStatus(applicant.status)!=="aprovado") return;
     const duplicate=siteMembers.some(m=>(applicant.jogador_id && m.id_jogo && String(m.id_jogo)===String(applicant.jogador_id)) || (m.nick && String(m.nick).trim().toLowerCase()===String(applicant.nick||"").trim().toLowerCase()));
     if(duplicate){message("Este jogador já está cadastrado no site.",true);return;}
-    const payload={nome:applicant.nick,nick:applicant.nick,id_jogo:applicant.jogador_id||null,patente:applicant.patente||null,funcao:applicant.funcao||null,ativo:true};
+    const payload={nome:applicant.nome_completo||applicant.nick,nick:applicant.nick,id_jogo:applicant.jogador_id||null,patente:applicant.patente||null,funcao:applicant.funcao||null,ativo:true};
     const {error}=await db.from("membros_f7").insert(payload);
     if(error){message("Não foi possível adicionar o membro: "+error.message,true);return;}
     message(applicant.nick+" foi adicionado à lista oficial de membros!");
     await load();
   }
   async function remove(id) {
-    if(!confirm("Deseja excluir esta inscrição definitivamente?")) return;
+    const applicant=rows.find(r=>String(r.id)===String(id));
+    if(!applicant) return;
+    const linkedMember=siteMembers.find(m=>
+      (applicant.jogador_id && m.id_jogo && String(m.id_jogo)===String(applicant.jogador_id)) ||
+      (!applicant.jogador_id && m.nick && normalizeSearch(m.nick)===normalizeSearch(applicant.nick))
+    );
+    const warning=linkedMember && linkedMember.ativo!==false
+      ? "Esta inscrição está vinculada a um membro do site. Ao excluir, ele também será removido do elenco público (o histórico será preservado). Continuar?"
+      : "Deseja excluir esta inscrição definitivamente?";
+    if(!confirm(warning)) return;
+    if(linkedMember && linkedMember.ativo!==false) {
+      const {error:memberError}=await db.from("membros_f7").update({ativo:false}).eq("id",linkedMember.id);
+      if(memberError){message("Não foi possível remover o membro do site: "+memberError.message,true);return;}
+    }
     const {error}=await db.from("inscricoes_f7").delete().eq("id",id);
-    if(error){message(error.message,true);return;}
-    message("Inscrição excluída.");
+    if(error){message("O membro foi removido do elenco, mas a inscrição não foi excluída: "+error.message,true);await load();return;}
+    message(linkedMember?"Inscrição excluída e membro removido do site.":"Inscrição excluída.");
     await load();
   }
   $("loginForm").addEventListener("submit",async ev=>{
