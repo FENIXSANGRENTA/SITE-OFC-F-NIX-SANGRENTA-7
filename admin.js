@@ -84,7 +84,7 @@
     if(error){setMessage("dashboardMessage",error.message,true);return;}
     setMessage("dashboardMessage","Registro excluído.");loadRows();
   }
-  const normalizeSearch = value => String(value ?? "").normalize("NFKC").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const normalizeSearch = value => String(value ?? "").normalize("NFKC").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
   const roleKey = value => {
     const v=normalizeSearch(value);
     if(v.includes("cura")) return "cura";
