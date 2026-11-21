@@ -30,3 +30,5 @@
 .admin-member-card .row-actions button{border-radius:6px;padding:8px 10px}
 .admin-member-card .row-actions button.danger{background:rgba(240,24,45,.08)}
 @media(max-width:650px){.member-tools{grid-template-columns:1fr;padding:13px}.admin-member-grid{grid-template-columns:1fr}}
+
+.active-member-count{margin:14px 0 0;color:#ff626f;font-size:12px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase}
