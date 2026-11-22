@@ -188,8 +188,8 @@
     $("tableWrap").innerHTML='<p class="admin-loading">Carregando dados...</p>';
     const {data,error}=await db.from(s.table).select("*").limit(200);
     if(error){$("tableWrap").innerHTML='<p class="admin-error">Erro ao carregar: '+escapeHtml(error.message)+'</p>';return;}
+    if(active==="membros"){renderMemberCards(data||[]);return;}
     if(!data?.length){$("tableWrap").innerHTML='<div class="empty-state"><h3>NENHUM REGISTRO</h3><p>Use o botão Adicionar para cadastrar o primeiro.</p></div>';return;}
-    if(active==="membros"){renderMemberCards(data);return;}
     if(active==="lines"){await renderLineCards(data);return;}
     const cols=s.columns;
     let html='<div class="admin-table-scroll"><table class="data-table"><thead><tr>'+cols.map(c=>'<th>'+escapeHtml(c.replaceAll("_"," "))+'</th>').join("")+'<th>AÇÕES</th></tr></thead><tbody>';
