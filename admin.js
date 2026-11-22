@@ -47,7 +47,7 @@
   }
   function openEditor(row=null) {
     const s=sections[active]; editingId=row?.id ?? null;
-    $("editor").innerHTML='<form id="recordForm"><div class="editor-head"><h3>'+(row?'EDITAR LINE':'NOVA LINE')+'</h3><button type="button" id="cancelEdit" class="text-button">FECHAR ×</button></div><div class="editor-grid">'+s.fields.map(f=>renderField(f,row?.[f[0]])).join("")+'</div><div class="editor-actions"><button class="button button-red" type="submit">SALVAR LINE</button></div><p id="editorMessage" class="admin-message"></p></form>';
+    $("editor").innerHTML='<form id="recordForm"><div class="editor-head"><h3>'+(row?'EDITAR '+s.title:'NOVO '+(active==="lines"?"LINE":s.title.slice(0,-1)))+'</h3><button type="button" id="cancelEdit" class="text-button">FECHAR ×</button></div><div class="editor-grid">'+s.fields.map(f=>renderField(f,row?.[f[0]])).join("")+'</div><div class="editor-actions"><button class="button button-red" type="submit">SALVAR LINE</button></div><p id="editorMessage" class="admin-message"></p></form>';
     $("editor").hidden=false;
     $("cancelEdit").addEventListener("click",()=>{$("editor").hidden=true;editingId=null;});
     $("recordForm").addEventListener("submit",saveRecord);
