@@ -15,9 +15,6 @@
     lines: { title:"LINES", desc:"Crie as equipes e organize as formações.", table:"lines_f7", fields:[
       ["nome","Nome da Line","text",true],["descricao","Descrição","textarea",false],["ativa","Ativa","checkbox",false]
     ], columns:["nome","descricao","ativa"] },
-    vinculacoes: { title:"JOGADORES NAS LINES", desc:"Vincule um membro a uma line usando os IDs dos registros.", table:"line_membros_f7", fields:[
-      ["line_id","ID da Line","text",true],["membro_id","ID do membro","text",true]
-    ], columns:["line_id","membro_id"] },
     resultados: { title:"RESULTADOS", desc:"Registre pontuações e colocações dos jogadores.", table:"resultados_f7", fields:[
       ["membro_id","ID do membro (opcional)","text",false],["nick","Nick","text",true],["pontos","Pontos","number",true],["colocacao","Colocação","number",false],["data_resultado","Data do resultado","date",true],["descricao","Descrição","textarea",false]
     ], columns:["nick","pontos","colocacao","data_resultado","descricao"] },
