@@ -1,11 +1,11 @@
 /* Painel exclusivo de inscrições HYDRA 7 */
 (() => {
   const $ = id => document.getElementById(id);
-  if (!window.HYDRA 7_SUPABASE_URL || !window.HYDRA 7_SUPABASE_KEY || !window.supabase) {
+  if (!window.F7_SUPABASE_URL || !window.F7_SUPABASE_KEY || !window.supabase) {
     $("loginMessage").textContent = "Não foi possível carregar a configuração do Supabase.";
     return;
   }
-  const db = window.supabase.createClient(window.HYDRA 7_SUPABASE_URL, window.HYDRA 7_SUPABASE_KEY);
+  const db = window.supabase.createClient(window.F7_SUPABASE_URL, window.F7_SUPABASE_KEY);
   let filter = "Pendente";
   let rows = [];
   let siteMembers = [];
