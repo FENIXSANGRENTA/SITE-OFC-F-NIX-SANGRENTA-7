@@ -21,7 +21,7 @@
     campeonatos: { title:"CAMPEONATOS", desc:"Registre campanhas e colocações da organização.", table:"campeonatos_f7", fields:[
       ["nome","Nome do campeonato","text",true],["colocacao","Colocação","text",false],["descricao","Descrição","textarea",false],["data_inicio","Data de início","date",false],["data_fim","Data de término","date",false]
     ], columns:["nome","colocacao","descricao","data_inicio","data_fim"] },
-    noticias: { title:"NOTÍCIAS", desc:"Publique avisos no espaço oficial da F7.", table:"noticias_f7", fields:[
+    noticias: { title:"NOTÍCIAS", desc:"Publique avisos no espaço oficial da HYDRA 7.", table:"noticias_f7", fields:[
       ["titulo","Título","text",true],["conteudo","Conteúdo","textarea",true],["imagem_url","URL da imagem (opcional)","url",false],["publicado","Publicado","checkbox",false]
     ], columns:["titulo","conteudo","publicado","criado_em"] },
     advertencias: { title:"ADVERTÊNCIAS", desc:"Registre ocorrências administrativas dos membros.", table:"advertencias_f7", fields:[
