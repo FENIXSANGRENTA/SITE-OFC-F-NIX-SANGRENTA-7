@@ -4,7 +4,7 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#090909"><meta name="description" content="Inscreva-se para fazer parte da HYDRA 7.">
   <title>Recrutamento | HYDRA 7</title><link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="f7-improvements.css?v=hydra7-logo-20261124">
+  <link rel="stylesheet" href="f7-improvements.css?v=hydra7-paineis-20261124">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 </head>
@@ -12,11 +12,15 @@
 <header class="topbar"><a class="brand" href="index.html"><img class="brand-logo" src="https://i.imgur.com/PpOaLAu.png" alt="HYDRA 7"><span>HYDRA <b>7</b></span></a><a class="back-link" href="index.html">← VOLTAR AO SITE</a></header>
 <main class="page-shell">
   <div class="form-card recruitment-card">
-    <p class="eyebrow">VENHA PARA A EQUIPE</p><h1>RECRUTAMENTO <span style="color:#ff3038">HYDRA 7</span></h1>
-    <p>Preencha seus dados com atenção. Sua inscrição será enviada para a equipe administrativa e ficará aguardando avaliação.</p>
-    <div class="notice">Envie informações verdadeiras. A inscrição não garante entrada automática na organização.</div>
+    <div class="recruitment-brand">
+      <img src="https://i.imgur.com/PpOaLAu.png" alt="Emblema HYDRA 7">
+      <div><p class="eyebrow">RECRUTAMENTO OFICIAL</p><span>HONRA • UNIÃO • GUERRA</span></div>
+    </div>
+    <h1>FAÇA PARTE DA <span>HYDRA 7</span></h1>
+    <p class="recruitment-intro">Mostre seu potencial e venha fortalecer nossa organização. Preencha sua inscrição com atenção; a equipe administrativa fará a avaliação.</p>
+    <div class="notice"><strong>ATENÇÃO, CANDIDATO</strong><br>Informe dados verdadeiros e mantenha seu WhatsApp disponível. O envio da inscrição não garante aprovação automática.</div>
     <form id="recruitmentForm">
-      <h2 class="form-section-title">01 / DADOS DO JOGADOR</h2>
+      <h2 class="form-section-title">01 / IDENTIFICAÇÃO DO JOGADOR</h2>
       <label class="field"><span>NOME COMPLETO *</span><input name="nome_completo" maxlength="100" required placeholder="Seu nome completo"></label>
       <label class="field"><span>NICK NO FREE FIRE *</span><input name="nick" maxlength="40" required placeholder="Seu nick no jogo"></label>
       <label class="field"><span>ID DO JOGADOR *</span><input name="jogador_id" inputmode="numeric" maxlength="20" required placeholder="Seu ID do Free Fire"></label>
@@ -26,17 +30,17 @@
       </div>
       <label class="field"><span>CIDADE / ESTADO *</span><input name="cidade" maxlength="80" required placeholder="Ex.: Passos Maia - SC"></label>
       <label class="field"><span>WHATSAPP COM DDD *</span><input name="whatsapp" type="tel" maxlength="25" required placeholder="(00) 00000-0000"></label>
-      <h2 class="form-section-title">02 / PERFIL NO JOGO</h2>
+      <h2 class="form-section-title">02 / PERFIL COMPETITIVO</h2>
       <div class="form-two">
         <label class="field"><span>FUNÇÃO *</span><select name="funcao" required><option value="">Selecione sua função</option><option value="Cura">Cura</option><option value="Gás">Gás</option><option value="Rush">Rush</option><option value="Suporte">Suporte</option></select></label>
         <label class="field"><span>PATENTE ATUAL *</span><select name="patente" required><option value="">Selecione sua patente</option><optgroup label="Bronze"><option>Bronze I</option><option>Bronze II</option><option>Bronze III</option></optgroup><optgroup label="Prata"><option>Prata I</option><option>Prata II</option><option>Prata III</option></optgroup><optgroup label="Ouro"><option>Ouro I</option><option>Ouro II</option><option>Ouro III</option><option>Ouro IV</option></optgroup><optgroup label="Platina"><option>Platina I</option><option>Platina II</option><option>Platina III</option><option>Platina IV</option></optgroup><optgroup label="Diamante"><option>Diamante I</option><option>Diamante II</option><option>Diamante III</option><option>Diamante IV</option><option>Diamante V</option></optgroup><option>Mestre</option><option>Elite</option><option>Desafiante</option></select></label>
       </div>
-      <h2 class="form-section-title">03 / DISPONIBILIDADE E EQUIPE</h2>
+      <h2 class="form-section-title">03 / DISPONIBILIDADE E ORGANIZAÇÃO</h2>
       <label class="field"><span>VOCÊ TEM DISPONIBILIDADE PARA PARTICIPAR DAS GUERRAS? *</span><select name="disponibilidade_guerras" required><option value="">Selecione</option><option value="true">Sim</option><option value="false">Não</option></select></label>
       <label class="field"><span>COM QUE FREQUÊNCIA VOCÊ JOGA? *</span><select name="atividade" required><option value="">Selecione</option><option>Todos os dias</option><option>Quase todos os dias</option><option>Algumas vezes na semana</option><option>Apenas finais de semana</option></select></label>
       <label class="field"><span>ACOMPANHA O GRUPO / AVISOS DA ORGANIZAÇÃO? *</span><select name="acompanha_grupo" required><option value="">Selecione</option><option>Sim</option><option>Não</option></select></label>
       <label class="field"><span>JÁ JOGA EM UMA LINE ORGANIZADA? *</span><select name="line_organizada" required><option value="">Selecione</option><option>Sim</option><option>Não</option><option>Estou procurando uma</option></select></label>
-      <button class="button button-red recruitment-submit" type="submit">ENVIAR INSCRIÇÃO</button>
+      <button class="button button-red recruitment-submit" type="submit">ENVIAR PARA A AVALIAÇÃO</button>
       <p id="formMessage" class="admin-message" role="status" aria-live="polite"></p>
     </form>
   </div>
