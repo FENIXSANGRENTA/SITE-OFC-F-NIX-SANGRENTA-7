@@ -2,17 +2,17 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#090909"><meta name="description" content="Inscreva-se para fazer parte da FENIX SANGRENTA 7.">
-  <title>Recrutamento | F7</title><link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#090909"><meta name="description" content="Inscreva-se para fazer parte da HYDRA 7.">
+  <title>Recrutamento | HYDRA 7</title><link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="f7-improvements.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 </head>
 <body>
-<header class="topbar"><a class="brand" href="index.html"><img class="brand-logo" src="https://i.imgur.com/JfKpSTn.png" alt="Logo F7"><span>FENIX <b>SANGRENTA 7</b></span></a><a class="back-link" href="index.html">← VOLTAR AO SITE</a></header>
+<header class="topbar"><a class="brand" href="index.html"><img class="brand-logo" src="hydra7-logo.png" alt="Logo HYDRA 7"><span>HYDRA <b>7</b></span></a><a class="back-link" href="index.html">← VOLTAR AO SITE</a></header>
 <main class="page-shell">
   <div class="form-card recruitment-card">
-    <p class="eyebrow">VENHA PARA A EQUIPE</p><h1>RECRUTAMENTO <span style="color:#ff3038">F7</span></h1>
+    <p class="eyebrow">VENHA PARA A EQUIPE</p><h1>RECRUTAMENTO <span style="color:#ff3038">HYDRA 7</span></h1>
     <p>Preencha seus dados com atenção. Sua inscrição será enviada para a equipe administrativa e ficará aguardando avaliação.</p>
     <div class="notice">Envie informações verdadeiras. A inscrição não garante entrada automática na organização.</div>
     <form id="recruitmentForm">
@@ -41,16 +41,16 @@
     </form>
   </div>
 </main>
-<footer class="footer"><span class="brand"><span class="brand-mark">F7</span><span>FENIX <b>SANGRENTA 7</b></span></span><p>© FENIX SANGRENTA 7</p></footer>
+<footer class="footer"><span class="brand"><span class="brand-mark">H7</span><span>HYDRA <b>7</b></span></span><p>© HYDRA 7</p></footer>
 <script>
 (() => {
   const form=document.getElementById("recruitmentForm");
   const message=document.getElementById("formMessage");
-  if(!window.supabase || !window.F7_SUPABASE_URL || !window.F7_SUPABASE_KEY){
+  if(!window.supabase || !window.HYDRA 7_SUPABASE_URL || !window.HYDRA 7_SUPABASE_KEY){
     message.textContent="O formulário não conseguiu carregar. Atualize a página mais tarde.";
     form.querySelector("button").disabled=true;return;
   }
-  const db=window.supabase.createClient(window.F7_SUPABASE_URL,window.F7_SUPABASE_KEY);
+  const db=window.supabase.createClient(window.HYDRA 7_SUPABASE_URL,window.HYDRA 7_SUPABASE_KEY);
   form.addEventListener("submit",async event=>{
     event.preventDefault();
     const button=form.querySelector("button");
