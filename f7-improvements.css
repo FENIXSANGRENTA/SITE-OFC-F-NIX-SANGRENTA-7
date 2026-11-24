@@ -153,3 +153,33 @@
 .admin-member-count span{color:#ff929b;font-size:10px;font-weight:900;letter-spacing:1.2px}
 .admin-member-count strong{color:#fff;font-size:25px;line-height:1}
 .admin-member-count small{color:#9ca3b1;font-size:11px}
+
+
+/* HYDRA 7 | acabamento dos painéis e do recrutamento */
+.admin-page .topbar{background:linear-gradient(90deg,#08090c 0%,#11131a 55%,#16090d 100%);border-bottom-color:rgba(199,203,212,.2)}
+.admin-page .brand-logo{filter:drop-shadow(0 0 9px rgba(220,30,50,.22))}
+.admin-page .admin-box,.admin-page #dashboard{position:relative}
+.admin-page .admin-box:before{content:"";display:block;width:54px;height:3px;margin:0 0 20px;background:linear-gradient(90deg,#f0182d,#c7cbd4)}
+.admin-page .admin-heading{padding:22px 24px;background:linear-gradient(110deg,rgba(240,24,45,.09),rgba(199,203,212,.025));border:1px solid rgba(199,203,212,.14);border-left:3px solid #f0182d;border-radius:12px}
+.admin-page .admin-tabs .admin-tab{border-radius:7px}
+.admin-page .admin-tabs .admin-tab.active{box-shadow:inset 0 -2px #c7cbd4,0 5px 18px rgba(240,24,45,.12)}
+.admin-page .admin-toolbar{padding:15px 17px;background:#101219;border:1px solid #292e39;border-radius:10px}
+.admin-page .admin-toolbar h2{color:#f4f5f7}
+.admin-page .admin-toolbar .button-red,.admin-page .admin-submit{box-shadow:0 5px 18px rgba(215,25,32,.18)}
+.recruitment-card{position:relative;overflow:hidden;border-color:rgba(199,203,212,.18);border-top:3px solid #d71920;box-shadow:0 22px 65px rgba(0,0,0,.38)}
+.recruitment-card:before{content:"";position:absolute;top:-145px;right:-125px;width:290px;height:290px;border-radius:50%;background:rgba(215,25,32,.12);filter:blur(55px);pointer-events:none}
+.recruitment-brand{position:relative;display:flex;align-items:center;gap:15px;margin-bottom:22px;padding:13px 15px;background:linear-gradient(100deg,#191b23,#100d11);border:1px solid #343946;border-radius:10px}
+.recruitment-brand img{width:76px;height:76px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(215,25,32,.2))}
+.recruitment-brand .eyebrow{margin:0 0 8px}
+.recruitment-brand span{color:#c7cbd4;font-size:10px;font-weight:900;letter-spacing:1.7px}
+.recruitment-card h1{position:relative;font-size:clamp(39px,7vw,56px);line-height:.98;letter-spacing:-.7px;margin:12px 0 15px}
+.recruitment-card h1 span{color:#ff3038!important}
+.recruitment-card .recruitment-intro{position:relative;color:#c0c5cf;font-size:13px;line-height:1.8}
+.recruitment-card .notice{margin:20px 0 27px;background:linear-gradient(100deg,rgba(215,25,32,.13),rgba(215,25,32,.045));border:1px solid rgba(215,25,32,.25);border-left:3px solid #d71920;border-radius:7px}
+.recruitment-card .notice strong{color:#ff7b85;font-size:10px;letter-spacing:1.2px}
+.recruitment-card .form-section-title{margin:30px 0 16px;padding:12px 13px;background:#171922;border:1px solid #303542;border-left:3px solid #d71920;border-radius:6px;color:#e6e8ed;font-size:16px;letter-spacing:1px}
+.recruitment-card .field span{color:#c7cbd4}
+.recruitment-card .field input,.recruitment-card .field select{border-color:#343946;border-radius:7px;background:#090b10;transition:border-color .2s,box-shadow .2s}
+.recruitment-card .field input:focus,.recruitment-card .field select:focus{border-color:#d71920;box-shadow:0 0 0 3px rgba(215,25,32,.12)}
+.recruitment-card .recruitment-submit{width:100%;min-height:50px;margin-top:15px;border-radius:7px;font-weight:900;letter-spacing:1.3px}
+@media(max-width:600px){.recruitment-brand img{width:62px;height:62px}.recruitment-brand{gap:10px;padding:10px}.recruitment-card h1{font-size:39px}.admin-page .admin-heading{padding:16px}}
