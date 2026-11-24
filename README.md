@@ -1,6 +1,6 @@
 # 🐉 HYDRA 7 | Site Oficial
 
-**HONRA • UNIÃO • GUERRA**
+**ONDE UM CAI, OUTROS SE LEVANTAM**
 
 Site oficial da guilda **HYDRA 7**, desenvolvido para reunir informações da organização, apresentar seus membros e lines, divulgar resultados e campeonatos e receber inscrições para recrutamento.
 
@@ -35,6 +35,6 @@ O projeto possui painéis administrativos para gerenciar os dados do site e anal
 ## 🐍 Identidade da guilda
 
 **HYDRA 7**  
-**HONRA • UNIÃO • GUERRA**
+**ONDE UM CAI, OUTROS SE LEVANTAM**
 
 Projeto oficial da organização HYDRA 7. Todos os direitos reservados.
