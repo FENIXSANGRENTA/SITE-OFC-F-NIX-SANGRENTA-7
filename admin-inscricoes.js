@@ -1,11 +1,11 @@
-/* Painel exclusivo de inscrições F7 */
+/* Painel exclusivo de inscrições HYDRA 7 */
 (() => {
   const $ = id => document.getElementById(id);
-  if (!window.F7_SUPABASE_URL || !window.F7_SUPABASE_KEY || !window.supabase) {
+  if (!window.HYDRA 7_SUPABASE_URL || !window.HYDRA 7_SUPABASE_KEY || !window.supabase) {
     $("loginMessage").textContent = "Não foi possível carregar a configuração do Supabase.";
     return;
   }
-  const db = window.supabase.createClient(window.F7_SUPABASE_URL, window.F7_SUPABASE_KEY);
+  const db = window.supabase.createClient(window.HYDRA 7_SUPABASE_URL, window.HYDRA 7_SUPABASE_KEY);
   let filter = "Pendente";
   let rows = [];
   let siteMembers = [];
@@ -80,7 +80,7 @@
       const addButton=normalizedStatus(r.status)==="aprovado" ? (alreadyAdded?'<span class="application-status">JÁ NO SITE</span>':'<button data-add-member="'+esc(r.id)+'">ADICIONAR AO SITE</button>') : "";
       const whatsappDigits=String(r.whatsapp||"").replace(/\D/g,"");
       const whatsappNumber=whatsappDigits ? (whatsappDigits.startsWith("55") ? whatsappDigits : "55"+whatsappDigits) : "";
-      const approvalMessage="Olá, "+(r.nick||"jogador")+"! Sua inscrição na FENIX SANGRENTA 7 (F7) foi aprovada! Seja bem-vindo(a) à família F7. Em breve passaremos as próximas orientações. HONRA. UNIÃO. GUERRA.";
+      const approvalMessage="Olá, "+(r.nick||"jogador")+"! Sua inscrição na HYDRA 7 foi aprovada! Seja bem-vindo(a) à família HYDRA 7. Em breve passaremos as próximas orientações. HONRA. UNIÃO. GUERRA.";
       const whatsappButton=whatsappNumber && normalizedStatus(r.status)==="aprovado" ? '<a class="whatsapp-button" href="https://api.whatsapp.com/send?phone='+whatsappNumber+'&text='+encodeURIComponent(approvalMessage)+'" target="_blank" rel="noopener noreferrer">ENVIAR APROVAÇÃO PELO WHATSAPP</a>' : "";
       return '<article class="application-card"><div class="application-top"><div><p class="public-meta">INSCRIÇÃO #'+esc(r.id)+'</p><h3>'+esc(r.nick)+'</h3>'+(r.nome_completo?'<p class="application-realname">'+esc(r.nome_completo)+'</p>':'')+'<p class="application-status">'+esc(r.status||"Pendente")+'</p></div><div class="row-actions">'+whatsappButton+'<button data-detail="'+i+'">VER DETALHES</button>'+(normalizedStatus(r.status)==="aprovado"||normalizedStatus(r.status)==="reprovado"?'':'<button data-approve="'+esc(r.id)+'">APROVAR</button><button data-reject="'+esc(r.id)+'">REPROVAR</button>')+addButton+'<button class="danger" data-delete="'+esc(r.id)+'">EXCLUIR</button></div></div><div class="application-details" id="details-'+i+'" hidden>'+fields.map(([key,label])=>'<div><b>'+label+'</b><span>'+esc(pretty(r[key]))+'</span></div>').join("")+'</div></article>';
     }).join("");
