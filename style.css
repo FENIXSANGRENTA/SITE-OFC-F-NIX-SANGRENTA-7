@@ -248,3 +248,9 @@
 /* Identidade HYDRA 7: prata e vermelho sobre preto */
 .brand b,.eyebrow,.hero-tag strong,.admin-title span,.admin-line-kicker,.admin-member-tag{color:var(--silver)}
 .hero-logo{filter:drop-shadow(0 0 35px rgba(199,203,212,.22))}
+
+/* Marca provisória HYDRA 7 enquanto a logo enviada é adicionada aos arquivos do site */
+.hero-wordmark{position:absolute;right:5%;top:50%;transform:translateY(-50%);z-index:1;font-family:'Barlow Condensed',Impact,sans-serif;font-size:clamp(76px,12vw,150px);font-weight:900;letter-spacing:-3px;color:#f2f3f6;text-shadow:4px 4px 0 #777,8px 8px 0 #171717,0 0 32px rgba(215,25,32,.3);-webkit-text-stroke:1px #c7cbd4;white-space:nowrap}
+.hero-wordmark span{color:#d71920;-webkit-text-stroke:1px #f2f3f6}
+.brand-mark{color:#fff;border:1px solid #c7cbd4;box-shadow:2px 2px 0 #777}
+@media(max-width:850px){.hero-wordmark{right:4%;top:auto;bottom:90px;transform:none;font-size:clamp(56px,14vw,100px);opacity:.2}}
