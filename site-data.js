@@ -1,7 +1,7 @@
 (() => {
   const root = window.supabase;
-  if (!root || !window.HYDRA 7_SUPABASE_URL || !window.HYDRA 7_SUPABASE_KEY) return;
-  const db = root.createClient(window.HYDRA 7_SUPABASE_URL, window.HYDRA 7_SUPABASE_KEY);
+  if (!root || !window.F7_SUPABASE_URL || !window.F7_SUPABASE_KEY) return;
+  const db = root.createClient(window.F7_SUPABASE_URL, window.F7_SUPABASE_KEY);
   const $ = id => document.getElementById(id);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const empty = (id, title, msg) => { const el=$(id); if(el) el.innerHTML='<div class="empty-state"><span class="empty-icon">✦</span><h3>'+esc(title)+'</h3><p>'+esc(msg)+'</p></div>'; };
