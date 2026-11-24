@@ -46,11 +46,11 @@
 (() => {
   const form=document.getElementById("recruitmentForm");
   const message=document.getElementById("formMessage");
-  if(!window.supabase || !window.HYDRA 7_SUPABASE_URL || !window.HYDRA 7_SUPABASE_KEY){
+  if(!window.supabase || !window.F7_SUPABASE_URL || !window.F7_SUPABASE_KEY){
     message.textContent="O formulário não conseguiu carregar. Atualize a página mais tarde.";
     form.querySelector("button").disabled=true;return;
   }
-  const db=window.supabase.createClient(window.HYDRA 7_SUPABASE_URL,window.HYDRA 7_SUPABASE_KEY);
+  const db=window.supabase.createClient(window.F7_SUPABASE_URL,window.F7_SUPABASE_KEY);
   form.addEventListener("submit",async event=>{
     event.preventDefault();
     const button=form.querySelector("button");
