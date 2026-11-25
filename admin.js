@@ -113,14 +113,29 @@
   async function openLinePlayers(line) {
     const [{data:members,error:memberError},{data:links,error:linkError}]=await Promise.all([
       db.from("membros_f7").select("id,nick,nome,id_jogo,funcao").eq("ativo",true).order("nick"),
-      db.from("line_membros_f7").select("membro_id").eq("line_id",line.id)
+      db.from("line_membros_f7").select("membro_id,funcao").eq("line_id",line.id)
     ]);
     if(memberError||linkError){setMessage("dashboardMessage","Não foi possível abrir os jogadores: "+(memberError?.message||linkError?.message),true);return;}
+    const roleOptions=["Rush","Cura","Gás","Suporte"];
+    const normalizeRole=value=>{
+      const v=normalizeSearch(value);
+      if(v==="rush") return "Rush";
+      if(v==="cura"||v==="curandeiro") return "Cura";
+      if(v==="gas"||v==="fullgas") return "Gás";
+      if(v==="suporte") return "Suporte";
+      return "";
+    };
     const selected=new Set((links||[]).map(x=>String(x.membro_id)));
+    const savedRoles=new Map((links||[]).map(x=>[String(x.membro_id),normalizeRole(x.funcao)]));
     const overlay=document.createElement("div");
     overlay.className="line-modal-backdrop";
     overlay.id="linePlayersModal";
-    overlay.innerHTML='<section class="line-modal" role="dialog" aria-modal="true" aria-labelledby="lineModalTitle"><div class="line-modal-head"><div><p class="line-modal-kicker">ORGANIZAÇÃO HYDRA 7</p><h3 id="lineModalTitle">JOGADORES · '+escapeHtml(line.nome)+'</h3><p>Selecione os membros ativos que farão parte desta Line.</p></div><button type="button" class="line-modal-close" id="closeLineModal">×</button></div><div class="line-modal-tools"><input id="lineModalSearch" type="search" placeholder="Pesquisar membro por nick ou nome..."><span id="lineModalCount">'+selected.size+' selecionado(s)</span></div><button type="button" class="line-member-select-trigger" id="lineMemberToggle"><span id="lineMemberSelectText">Selecionar jogadores</span><b>⌄</b></button><label class="field line-captain-field"><span>CAPITÃO DA LINE</span><select id="lineCaptainSelect"><option value="">Selecione o capitão</option>'+(members||[]).filter(m=>selected.has(String(m.id))).map(m=>'<option value="'+escapeHtml(m.id)+'" '+(String(line.capitao_id||"")===String(m.id)?"selected":"")+'>'+escapeHtml(m.nick||m.nome||"Jogador")+'</option>').join("")+'</select></label><div class="line-member-dropdown" id="lineMemberDropdown" hidden><div class="line-modal-list">'+(members||[]).map(m=>'<label class="line-modal-member"><input type="checkbox" name="line_member" value="'+escapeHtml(m.id)+'" '+(selected.has(String(m.id))?'checked':'')+'><span class="line-modal-member-text"><strong>'+escapeHtml(m.nick||m.nome||"Jogador")+'</strong><small>'+escapeHtml([m.nome&&m.nick&&m.nome!==m.nick?m.nome:"",m.funcao||"Sem função",m.id_jogo?"ID "+m.id_jogo:""].filter(Boolean).join(" · "))+'</small></span><span class="line-modal-check">✓</span></label>').join("")+'</div></div><div class="line-modal-footer"><span class="line-modal-hint">Marque os jogadores que farão parte desta Line.</span><div><button type="button" class="button button-outline" id="cancelLinePlayers">CANCELAR</button><button type="button" class="button button-red" id="saveLinePlayers">SALVAR JOGADORES</button></div></div><p id="lineModalMessage" class="admin-message"></p></section>';
+    overlay.innerHTML='<section class="line-modal" role="dialog" aria-modal="true" aria-labelledby="lineModalTitle"><div class="line-modal-head"><div><p class="line-modal-kicker">ORGANIZAÇÃO HYDRA 7</p><h3 id="lineModalTitle">JOGADORES · '+escapeHtml(line.nome)+'</h3><p>Selecione os membros e defina a função de cada um nesta Line.</p></div><button type="button" class="line-modal-close" id="closeLineModal">×</button></div><div class="line-modal-tools"><input id="lineModalSearch" type="search" placeholder="Pesquisar membro por nick ou nome..."><span id="lineModalCount">'+selected.size+' selecionado(s)</span></div><button type="button" class="line-member-select-trigger" id="lineMemberToggle"><span id="lineMemberSelectText">Selecionar jogadores</span><b>⌄</b></button><label class="field line-captain-field"><span>CAPITÃO DA LINE</span><select id="lineCaptainSelect"><option value="">Selecione o capitão</option></select></label><div class="line-member-dropdown" id="lineMemberDropdown" hidden><div class="line-modal-list">'+(members||[]).map(m=>{
+      const id=String(m.id);
+      const checked=selected.has(id);
+      const role=savedRoles.get(id)||normalizeRole(m.funcao);
+      return '<div class="line-modal-member"><label class="line-modal-member-pick"><input type="checkbox" name="line_member" value="'+escapeHtml(id)+'" '+(checked?'checked':'')+'><span class="line-modal-member-text"><strong>'+escapeHtml(m.nick||m.nome||"Jogador")+'</strong><small>'+escapeHtml([m.nome&&m.nick&&m.nome!==m.nick?m.nome:"",m.id_jogo?"ID "+m.id_jogo:""].filter(Boolean).join(" · ")||"Membro ativo")+'</small></span><span class="line-modal-check">✓</span></label><label class="line-member-role-wrap"><span>FUNÇÃO NA LINE</span><select class="line-member-role" data-member-role="'+escapeHtml(id)+'" '+(checked?'':'disabled')+'><option value="">Selecione</option>'+roleOptions.map(o=>'<option value="'+o+'" '+(role===o?'selected':'')+'>'+o+'</option>').join("")+'</select></label></div>';
+    }).join("")+'</div></div><div class="line-modal-footer"><span class="line-modal-hint">Cada jogador precisa ter uma função definida nesta Line.</span><div><button type="button" class="button button-outline" id="cancelLinePlayers">CANCELAR</button><button type="button" class="button button-red" id="saveLinePlayers">SALVAR JOGADORES</button></div></div><p id="lineModalMessage" class="admin-message"></p></section>';
     document.body.appendChild(overlay);
     const close=()=>overlay.remove();
     $("closeLineModal").addEventListener("click",close);
@@ -135,7 +150,12 @@
       captainSelect.innerHTML='<option value="">Selecione o capitão</option>'+(members||[]).filter(m=>chosen.includes(String(m.id))).map(m=>'<option value="'+escapeHtml(m.id)+'">'+escapeHtml(m.nick||m.nome||"Jogador")+'</option>').join("");
       captainSelect.value=chosen.includes(previous)?previous:"";
     };
-    overlay.querySelectorAll('input[name="line_member"]').forEach(el=>el.addEventListener("change",()=>{updateCount();updateCaptainOptions();}));
+    overlay.querySelectorAll('input[name="line_member"]').forEach(el=>el.addEventListener("change",()=>{
+      const roleSelect=overlay.querySelector('[data-member-role="'+el.value+'"]');
+      roleSelect.disabled=!el.checked;
+      if(el.checked&&!roleSelect.value) roleSelect.value=normalizeRole((members||[]).find(m=>String(m.id)===el.value)?.funcao);
+      updateCount();updateCaptainOptions();
+    }));
     updateCount();
     updateCaptainOptions();
     $("lineMemberToggle").addEventListener("click",()=>{$("lineMemberDropdown").hidden=!$("lineMemberDropdown").hidden;});
@@ -144,36 +164,42 @@
       overlay.querySelectorAll(".line-modal-member").forEach(el=>{el.hidden=!normalizeSearch(el.textContent).includes(term);});
     });
     $("saveLinePlayers").addEventListener("click",async()=>{
-      const ids=checkboxes().map(el=>el.value);
+      const chosen=checkboxes();
+      const ids=chosen.map(el=>el.value);
       const captainId=$("lineCaptainSelect").value;
       if(captainId&&!ids.includes(captainId)){$("lineModalMessage").textContent="O capitão também precisa estar selecionado como jogador da Line.";return;}
+      const rows=chosen.map(el=>({line_id:line.id,membro_id:el.value,funcao:overlay.querySelector('[data-member-role="'+el.value+'"]').value}));
+      if(rows.some(row=>!row.funcao)){$("lineModalMessage").textContent="Selecione Rush, Cura, Gás ou Suporte para cada jogador marcado.";return;}
       $("saveLinePlayers").disabled=true;
-      $("lineModalMessage").textContent="Salvando jogadores...";
+      $("lineModalMessage").textContent="Salvando jogadores e funções...";
       const {error:clearCurrentError}=await db.from("line_membros_f7").delete().eq("line_id",line.id);
       if(clearCurrentError){$("lineModalMessage").textContent=clearCurrentError.message;$("saveLinePlayers").disabled=false;return;}
       if(ids.length){
         const {error:moveError}=await db.from("line_membros_f7").delete().in("membro_id",ids).neq("line_id",line.id);
         if(moveError){$("lineModalMessage").textContent=moveError.message;$("saveLinePlayers").disabled=false;return;}
-        const rows=ids.map(membro_id=>({line_id:line.id,membro_id}));
         const {error:insertError}=await db.from("line_membros_f7").insert(rows);
         if(insertError){$("lineModalMessage").textContent=insertError.message;$("saveLinePlayers").disabled=false;return;}
       }
       const {error:captainError}=await db.from("lines_f7").update({capitao_id:captainId||null}).eq("id",line.id);
       if(captainError){$("lineModalMessage").textContent="Jogadores salvos, mas não foi possível salvar o capitão: "+captainError.message;$("saveLinePlayers").disabled=false;return;}
-      close();setMessage("dashboardMessage","Jogadores e capitão da "+line.nome+" atualizados.");await loadRows();
+      close();setMessage("dashboardMessage","Jogadores, funções e capitão da "+line.nome+" atualizados.");await loadRows();
     });
   }
   async function renderLineCards(lines) {
     const [{data:links,error:linkError},{data:members,error:memberError}]=await Promise.all([
-      db.from("line_membros_f7").select("line_id,membro_id"),
+      db.from("line_membros_f7").select("line_id,membro_id,funcao"),
       db.from("membros_f7").select("id,nick,nome,funcao,ativo")
     ]);
     if(linkError||memberError){$("tableWrap").innerHTML='<p class="admin-error">Erro ao carregar jogadores das Lines: '+escapeHtml(linkError?.message||memberError?.message)+'</p>';return;}
     const html=lines.map(line=>{
-      const ids=(links||[]).filter(x=>String(x.line_id)===String(line.id)).map(x=>String(x.membro_id));
+      const lineLinks=(links||[]).filter(x=>String(x.line_id)===String(line.id));
+      const ids=lineLinks.map(x=>String(x.membro_id));
       const players=(members||[]).filter(m=>ids.includes(String(m.id))&&m.ativo!==false);
       const captain=(members||[]).find(m=>String(m.id)===String(line.capitao_id));
-      return '<article class="admin-line-card"><div class="admin-line-card-head"><div><span class="admin-line-kicker">FORMAÇÃO OFICIAL HYDRA 7</span><h3>'+escapeHtml(line.nome)+'</h3></div><span class="admin-line-count">'+players.length+' MEMBRO(S)</span></div><p class="admin-line-captain">CAPITÃO: <strong>'+escapeHtml(captain?.nick||captain?.nome||"Não definido")+'</strong></p><p class="admin-line-description">'+escapeHtml(line.descricao||"Sem descrição cadastrada.")+'</p><div class="admin-line-roster">'+(players.length?players.map(m=>'<div class="admin-line-roster-member"><span class="admin-line-avatar">'+escapeHtml(String(m.nick||m.nome||"HYDRA 7").trim().slice(0,2).toUpperCase())+'</span><span><strong>'+escapeHtml(m.nick||m.nome||"Jogador")+'</strong><small>'+escapeHtml(m.funcao||"Membro")+'</small></span></div>').join(""):'<p class="admin-line-empty">Nenhum jogador vinculado. Clique em JOGADORES para montar esta equipe.</p>')+'</div><div class="admin-line-actions"><button type="button" class="button button-red" data-players="'+line.id+'">JOGADORES</button><button type="button" class="button button-outline" data-edit="'+line.id+'">EDITAR LINE</button><button type="button" class="button button-outline line-delete" data-delete="'+line.id+'">EXCLUIR</button></div></article>';
+      return '<article class="admin-line-card"><div class="admin-line-card-head"><div><span class="admin-line-kicker">FORMAÇÃO OFICIAL HYDRA 7</span><h3>'+escapeHtml(line.nome)+'</h3></div><span class="admin-line-count">'+players.length+' MEMBRO(S)</span></div><p class="admin-line-captain">CAPITÃO: <strong>'+escapeHtml(captain?.nick||captain?.nome||"Não definido")+'</strong></p><p class="admin-line-description">'+escapeHtml(line.descricao||"Sem descrição cadastrada.")+'</p><div class="admin-line-roster">'+(players.length?players.map(m=>{
+        const link=lineLinks.find(x=>String(x.membro_id)===String(m.id));
+        return '<div class="admin-line-roster-member"><span class="admin-line-avatar">'+escapeHtml(String(m.nick||m.nome||"HYDRA 7").trim().slice(0,2).toUpperCase())+'</span><span><strong>'+escapeHtml(m.nick||m.nome||"Jogador")+'</strong><small>'+escapeHtml(link?.funcao||m.funcao||"Membro")+'</small></span></div>';
+      }).join(""):'<p class="admin-line-empty">Nenhum jogador vinculado. Clique em JOGADORES para montar esta equipe.</p>')+'</div><div class="admin-line-actions"><button type="button" class="button button-red" data-players="'+line.id+'">JOGADORES</button><button type="button" class="button button-outline" data-edit="'+line.id+'">EDITAR LINE</button><button type="button" class="button button-outline line-delete" data-delete="'+line.id+'">EXCLUIR</button></div></article>';
     }).join("");
     $("tableWrap").innerHTML='<div class="admin-lines-heading"><div><h3>LINES CADASTRADAS</h3><p>Gerencie as formações e seus integrantes em um só lugar.</p></div><span>'+lines.length+' LINE(S)</span></div><div class="admin-line-grid">'+html+'</div>';
     $("tableWrap").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>openEditor(lines.find(x=>String(x.id)===b.dataset.edit))));
