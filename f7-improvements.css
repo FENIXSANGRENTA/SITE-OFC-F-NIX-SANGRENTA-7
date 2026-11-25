@@ -183,3 +183,24 @@
 .recruitment-card .field input:focus,.recruitment-card .field select:focus{border-color:#d71920;box-shadow:0 0 0 3px rgba(215,25,32,.12)}
 .recruitment-card .recruitment-submit{width:100%;min-height:50px;margin-top:15px;border-radius:7px;font-weight:900;letter-spacing:1.3px}
 @media(max-width:600px){.recruitment-brand img{width:62px;height:62px}.recruitment-brand{gap:10px;padding:10px}.recruitment-card h1{font-size:39px}.admin-page .admin-heading{padding:16px}}
+
+
+/* Função individual de cada jogador dentro da Line */
+.line-modal-member{
+ display:flex;flex-direction:column;align-items:stretch;gap:10px;
+ cursor:default;
+}
+.line-modal-member-pick{
+ display:flex;align-items:center;gap:10px;min-width:0;cursor:pointer;
+}
+.line-member-role-wrap{
+ display:flex;flex-direction:column;gap:5px;margin-left:26px;
+ color:#ff929b;font-size:9px;font-weight:900;letter-spacing:.8px;
+}
+.line-member-role{
+ width:100%;min-height:36px;padding:8px 10px;
+ background:#090b10;border:1px solid #343946;border-radius:6px;
+ color:#f3f4f7;font:12px Arial,Helvetica,sans-serif;
+}
+.line-member-role:focus{outline:none;border-color:#f0182d;box-shadow:0 0 0 3px #f0182d20}
+.line-member-role:disabled{opacity:.45;cursor:not-allowed}
