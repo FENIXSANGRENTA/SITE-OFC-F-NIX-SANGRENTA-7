@@ -53,10 +53,23 @@
   }
   const normalizedStatus = value => String(value || "Pendente").trim().toLowerCase();
   function render() {
-    const isAlreadyAdded = r => siteMembers.some(m=>(r.jogador_id && m.id_jogo && String(m.id_jogo)===String(r.jogador_id) && m.ativo!==false) || (m.nick && normalizeSearch(m.nick)===normalizeSearch(r.nick) && m.ativo!==false));
+    const matchingSiteMember = r => siteMembers.find(m=>
+      (r.jogador_id && m.id_jogo && String(m.id_jogo)===String(r.jogador_id)) ||
+      (m.nick && normalizeSearch(m.nick)===normalizeSearch(r.nick))
+    );
+    const isAlreadyAdded = r => {
+      const member=matchingSiteMember(r);
+      return !!member && member.ativo!==false;
+    };
+    const isRemovedFromSite = r => {
+      const member=matchingSiteMember(r);
+      return normalizedStatus(r.status)==="removido" || (!!member && member.ativo===false);
+    };
     const baseVisible=filter==="AguardandoAdicao"
-      ? rows.filter(r=>normalizedStatus(r.status)==="aprovado" && !isAlreadyAdded(r))
-      : rows.filter(r=>normalizedStatus(r.status)===normalizedStatus(filter));
+      ? rows.filter(r=>normalizedStatus(r.status)==="aprovado" && !isAlreadyAdded(r) && !isRemovedFromSite(r))
+      : filter==="Removido"
+        ? rows.filter(isRemovedFromSite)
+        : rows.filter(r=>normalizedStatus(r.status)===normalizedStatus(filter));
     const term=normalizeSearch(searchTerm);
     const visible=baseVisible.filter(r=>{
       const textMatch=!term||normalizeSearch(r.nick).includes(term)||normalizeSearch(r.nome_completo).includes(term);
@@ -81,7 +94,8 @@
     ];
     $("applications").innerHTML=stats+selectionTools+tools+visible.map((r,i)=>{
       const alreadyAdded=isAlreadyAdded(r);
-      const addButton=normalizedStatus(r.status)==="aprovado" ? (alreadyAdded?'<span class="application-status">JÁ NO SITE</span>':'<button data-add-member="'+esc(r.id)+'">ADICIONAR AO SITE</button>') : "";
+      const canRestore=normalizedStatus(r.status)==="aprovado" || normalizedStatus(r.status)==="removido";
+      const addButton=canRestore ? (alreadyAdded?'<span class="application-status">JÁ NO SITE</span>':'<button data-add-member="'+esc(r.id)+'">'+(normalizedStatus(r.status)==="removido"?'RESTAURAR NO SITE':'ADICIONAR AO SITE')+'</button>') : "";
       const whatsappDigits=String(r.whatsapp||"").replace(/\D/g,"");
       const whatsappNumber=whatsappDigits ? (whatsappDigits.startsWith("55") ? whatsappDigits : "55"+whatsappDigits) : "";
       const approvalMessage="Olá, "+(r.nick||"jogador")+"! Sua inscrição na HYDRA 7 foi aprovada! Seja bem-vindo(a) à família HYDRA 7. Em breve passaremos as próximas orientações. HONRA. UNIÃO. GUERRA.";
@@ -158,7 +172,8 @@
   }
   async function addMemberToSite(id) {
     const applicant=rows.find(r=>String(r.id)===String(id));
-    if(!applicant || normalizedStatus(applicant.status)!=="aprovado") return;
+    if(!applicant || !["aprovado","removido"].includes(normalizedStatus(applicant.status))) return;
+    const wasRemoved=normalizedStatus(applicant.status)==="removido";
     const payload={nome:applicant.nome_completo||applicant.nick,nick:applicant.nick,id_jogo:applicant.jogador_id||null,patente:applicant.patente||null,funcao:applicant.funcao||null,ativo:true};
     // Se o jogador já existe no histórico do elenco, mas foi desativado, reativa o mesmo registro.
     const previousMember=siteMembers.find(m=>
@@ -176,6 +191,10 @@
       ({error}=await db.from("membros_f7").insert(payload));
     }
     if(error){message("Não foi possível adicionar o membro: "+error.message,true);return;}
+    if(wasRemoved) {
+      const {error:statusError}=await db.from("inscricoes_f7").update({status:"Aprovado"}).eq("id",applicant.id);
+      if(statusError){message("Membro restaurado no site, mas não foi possível atualizar o status da inscrição: "+statusError.message,true);await load();return;}
+    }
     message(previousMember ? applicant.nick+" foi reativado no elenco do site!" : applicant.nick+" foi adicionado à lista oficial de membros!");
     await load();
   }
