@@ -118,15 +118,35 @@
     }));
     const deleteButton=$("deleteSelectedApplications");
     if(deleteButton) deleteButton.addEventListener("click",async()=>{
-      const ids=[...selectedIds];
-      if(!ids.length) return;
+      // Lê também os checkboxes atuais para não depender de estado antigo após trocar de aba/filtro.
+      const checkedIds=[...$("applications").querySelectorAll("[data-select-application]:checked")]
+        .map(input=>String(input.dataset.selectApplication));
+      const ids=[...new Set([...checkedIds,...selectedIds])];
+      if(!ids.length) {
+        message("Selecione pelo menos uma inscrição para excluir.",true);
+        return;
+      }
       if(!confirm("Excluir definitivamente "+ids.length+" inscrição(ões) selecionada(s)? Esta ação não pode ser desfeita.")) return;
       deleteButton.disabled=true;
-      const {error}=await db.from("inscricoes_f7").delete().in("id",ids);
-      if(error){message("Não foi possível excluir as inscrições: "+error.message,true);return;}
+      message("Excluindo "+ids.length+" inscrição(ões)...");
+      const {data:deleted,error}=await db.from("inscricoes_f7").delete().in("id",ids).select("id");
+      if(error) {
+        message("Não foi possível excluir as inscrições: "+error.message,true);
+        deleteButton.disabled=false;
+        return;
+      }
+      const deletedCount=(deleted||[]).length;
+      if(deletedCount!==ids.length) {
+        const remaining=ids.length-deletedCount;
+        message(deletedCount+" inscrição(ões) excluída(s). "+remaining+" não foram apagadas. Verifique a permissão DELETE da tabela inscricoes_f7 no Supabase.",true);
+        selectedIds.clear();
+        selectionMode=false;
+        await load();
+        return;
+      }
       selectedIds.clear();
       selectionMode=false;
-      message(ids.length+" inscrição(ões) excluída(s).");
+      message(deletedCount+" inscrição(ões) excluída(s) com sucesso.");
       await load();
     });
   }
