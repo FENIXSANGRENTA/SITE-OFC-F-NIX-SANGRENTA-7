@@ -69,9 +69,23 @@
   async function removeRow(id, row=null) {
     if(!confirm(active==="membros"?"Este membro deixará de aparecer no site oficial. Deseja continuar?":"Tem certeza que deseja excluir este registro?")) return;
     if(active==="membros") {
+      const member=(await db.from("membros_f7").select("nick,id_jogo").eq("id",id).maybeSingle()).data;
       const {error}=await db.from("membros_f7").update({ativo:false}).eq("id",id);
       if(error){setMessage("dashboardMessage",error.message,true);return;}
-      setMessage("dashboardMessage","Membro removido do elenco público. O histórico foi preservado.");
+
+      // Ao retirar um membro do elenco, encerra também a inscrição aprovada correspondente.
+      if(member) {
+        let applicationUpdate=db.from("inscricoes_f7").update({status:"Removido"}).eq("status","Aprovado");
+        applicationUpdate=member.id_jogo
+          ? applicationUpdate.eq("jogador_id",String(member.id_jogo))
+          : applicationUpdate.eq("nick",member.nick||"");
+        const {error:applicationError}=await applicationUpdate;
+        if(applicationError){
+          setMessage("dashboardMessage","Membro removido do elenco, mas não foi possível atualizar a inscrição: "+applicationError.message,true);
+          await loadRows();return;
+        }
+      }
+      setMessage("dashboardMessage","Membro removido do elenco. A inscrição correspondente foi marcada como Removido.");
       await loadRows();return;
     }
     if(active==="lines"){
