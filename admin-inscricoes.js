@@ -95,17 +95,6 @@
   async function setStatus(id,status) {
     const {error}=await db.from("inscricoes_f7").update({status}).eq("id",id);
     if(error){message(error.message,true);return;}
-    if(status==="Aprovado") {
-      const applicant=rows.find(r=>String(r.id)===String(id));
-      if(applicant) {
-        applicant.status="Aprovado";
-        await addMemberToSite(id);
-      } else {
-        message("Inscrição aprovada, mas não foi possível localizar os dados para cadastrar o membro. Atualize o painel.",true);
-        await load();
-      }
-      return;
-    }
     message("Inscrição marcada como "+status+".");
     await load();
   }
