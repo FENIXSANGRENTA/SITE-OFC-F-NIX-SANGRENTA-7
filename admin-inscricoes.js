@@ -159,12 +159,24 @@
   async function addMemberToSite(id) {
     const applicant=rows.find(r=>String(r.id)===String(id));
     if(!applicant || normalizedStatus(applicant.status)!=="aprovado") return;
-    const duplicate=siteMembers.some(m=>(applicant.jogador_id && m.id_jogo && String(m.id_jogo)===String(applicant.jogador_id)) || (m.nick && normalizeSearch(m.nick)===normalizeSearch(applicant.nick)));
-    if(duplicate){message("Este jogador já está cadastrado no site.",true);return;}
     const payload={nome:applicant.nome_completo||applicant.nick,nick:applicant.nick,id_jogo:applicant.jogador_id||null,patente:applicant.patente||null,funcao:applicant.funcao||null,ativo:true};
-    const {error}=await db.from("membros_f7").insert(payload);
+    // Se o jogador já existe no histórico do elenco, mas foi desativado, reativa o mesmo registro.
+    const previousMember=siteMembers.find(m=>
+      (applicant.jogador_id && m.id_jogo && String(m.id_jogo)===String(applicant.jogador_id)) ||
+      (m.nick && normalizeSearch(m.nick)===normalizeSearch(applicant.nick))
+    );
+    if(previousMember && previousMember.ativo!==false) {
+      message("Este jogador já está cadastrado e ativo no site.",true);
+      return;
+    }
+    let error;
+    if(previousMember) {
+      ({error}=await db.from("membros_f7").update(payload).eq("id",previousMember.id));
+    } else {
+      ({error}=await db.from("membros_f7").insert(payload));
+    }
     if(error){message("Não foi possível adicionar o membro: "+error.message,true);return;}
-    message(applicant.nick+" foi adicionado à lista oficial de membros!");
+    message(previousMember ? applicant.nick+" foi reativado no elenco do site!" : applicant.nick+" foi adicionado à lista oficial de membros!");
     await load();
   }
   async function remove(id) {
