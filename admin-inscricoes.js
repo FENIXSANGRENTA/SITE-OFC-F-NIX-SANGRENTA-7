@@ -79,7 +79,7 @@
     const fields=[
       ["nome_completo","Nome completo"],["nick","Nick"],["jogador_id","ID do jogador"],["idade","Idade"],["nivel_conta","Nível"],["cidade","Cidade"],["whatsapp","WhatsApp"],["funcao","Função"],["patente","Patente"],["disponibilidade_guerras","Disponibilidade"],["atividade","Atividade"],["acompanha_grupo","Acompanha grupo"],["line_organizada","Line organizada"],["status","Status"]
     ];
-    $("applications").innerHTML=stats+tools+visible.map((r,i)=>{
+    $("applications").innerHTML=stats+selectionTools+tools+visible.map((r,i)=>{
       const alreadyAdded=isAlreadyAdded(r);
       const addButton=normalizedStatus(r.status)==="aprovado" ? (alreadyAdded?'<span class="application-status">JÁ NO SITE</span>':'<button data-add-member="'+esc(r.id)+'">ADICIONAR AO SITE</button>') : "";
       const whatsappDigits=String(r.whatsapp||"").replace(/\D/g,"");
