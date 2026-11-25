@@ -47,14 +47,24 @@
   }
   async function loadLines(){
     const {data:lines,error}=await db.from("lines_f7").select("id,nome,descricao,ativa").eq("ativa",true).limit(50);
-    if(error){empty("publicLines","LINES INDISPONÍVEIS","Não foi possível carregar as Lines agora.");return;}
+    if(error){empty("publicLines","LINES INDISPONÍVEIS","Não foi possível carregar as Lines: "+error.message);return;}
     if(!lines?.length){empty("publicLines","LINES EM ORGANIZAÇÃO","As formações da HYDRA 7 serão apresentadas aqui.");return;}
-    const links=await db.from("line_membros_f7").select("line_id,membro_id");
-    const members=await db.from("membros_f7").select("id,nick,nome,funcao").eq("ativo",true);
+    const [{data:links,error:linksError},{data:members,error:membersError}]=await Promise.all([
+      db.from("line_membros_f7").select("line_id,membro_id,funcao"),
+      db.from("membros_f7").select("id,nick,nome,funcao").eq("ativo",true)
+    ]);
+    if(linksError||membersError){empty("publicLines","LINES INDISPONÍVEIS","Não foi possível carregar os integrantes: "+(linksError?.message||membersError?.message));return;}
     const html=lines.map(line=>{
-      const ids=(links.data||[]).filter(x=>x.line_id===line.id).map(x=>x.membro_id);
-      const names=(members.data||[]).filter(m=>ids.includes(m.id)).map(m=>m.nick||m.nome);
-      return card(line.nome,names.length?names.join(" • "):"Line em formação",line.descricao||"Formação oficial da HYDRA 7.",'<div class="public-card-mark">HYDRA 7</div>');
+      const lineLinks=(links||[]).filter(x=>String(x.line_id)===String(line.id));
+      const roster=lineLinks.map(link=>{
+        const member=(members||[]).find(m=>String(m.id)===String(link.membro_id));
+        if(!member)return null;
+        return {name:member.nick||member.nome||"Jogador",role:link.funcao||member.funcao||""};
+      }).filter(Boolean);
+      const rosterHtml=roster.length
+        ? '<div class="public-line-roster">'+roster.map(player=>'<div class="public-line-player"><span>'+esc(player.name)+'</span>'+(player.role?'<strong>'+esc(player.role)+'</strong>':'')+'</div>').join("")+'</div>'
+        : '<p class="public-line-empty">Line em formação</p>';
+      return '<article class="public-card public-line-card"><div class="public-card-mark">HYDRA 7</div><h3>'+esc(line.nome)+'</h3>'+rosterHtml+(line.descricao?'<p>'+esc(line.descricao)+'</p>':'')+'</article>';
     }).join("");
     $("publicLines").innerHTML=html;
   }
