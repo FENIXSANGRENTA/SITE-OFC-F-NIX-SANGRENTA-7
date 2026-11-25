@@ -220,6 +220,6 @@
       });
     });
   }
-  document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));render();}));
+  document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{filter=b.dataset.filter;selectedIds.clear();document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));render();}));
   db.auth.getSession().then(({data})=>{if(data.session)authorize(data.session.user);});
 })();
