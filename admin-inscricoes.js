@@ -11,6 +11,8 @@
   let siteMembers = [];
   let searchTerm = "";
   let roleFilter = "";
+  let selectionMode = false;
+  const selectedIds = new Set();
   const esc = value => String(value ?? "—").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const pretty = value => value === true ? "Sim" : value === false ? "Não" : (value ?? "—");
   const normalizeSearch = value => String(value ?? "").normalize("NFKC").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
@@ -65,11 +67,13 @@
     const countApproved=rows.filter(r=>r.status==="Aprovado").length;
     const countRejected=rows.filter(r=>r.status==="Reprovado").length;
     const stats='<div class="admin-stats"><div class="admin-stat"><span>Total recebidas</span><strong>'+rows.length+'</strong></div><div class="admin-stat pending"><span>Pendentes</span><strong>'+countPending+'</strong></div><div class="admin-stat approved"><span>Aprovadas</span><strong>'+countApproved+'</strong></div><div class="admin-stat rejected"><span>Reprovadas</span><strong>'+countRejected+'</strong></div></div>';
+    const selectionTools='<div class="application-selection-tools"><button type="button" id="toggleSelection" class="button button-outline">'+(selectionMode?"CANCELAR SELEÇÃO":"SELECIONAR")+'</button>'+(selectionMode?'<label class="application-select-all"><input type="checkbox" id="selectAllApplications"> Selecionar todas desta aba</label><button type="button" id="deleteSelectedApplications" class="button button-red" '+(selectedIds.size?"":"disabled")+'>EXCLUIR SELECIONADAS ('+selectedIds.size+')</button>':"")+'</div>';
     const tools='<div class="member-tools application-tools"><label><span>PROCURAR POR NICK</span><input id="applicationSearch" type="search" value="'+esc(searchTerm)+'" placeholder="Digite parte do nick, mesmo personalizado"></label><label><span>FILTRAR POR FUNÇÃO</span><select id="applicationRole"><option value="">Todas as funções</option><option value="cura" '+(roleFilter==="cura"?'selected':'')+'>Cura</option><option value="gas" '+(roleFilter==="gas"?'selected':'')+'>Gás</option><option value="rush" '+(roleFilter==="rush"?'selected':'')+'>Rush</option><option value="suporte" '+(roleFilter==="suporte"?'selected':'')+'>Suporte</option></select></label></div>';
     if(!visible.length) {
-      $("applications").innerHTML=stats+tools+'<div class="empty-state"><h3>NENHUMA INSCRIÇÃO</h3><p>Não há candidatos com esta busca, função ou categoria.</p></div>';
+      $("applications").innerHTML=stats+selectionTools+tools+'<div class="empty-state"><h3>NENHUMA INSCRIÇÃO</h3><p>Não há candidatos com esta busca, função ou categoria.</p></div>';
       $("applicationSearch").addEventListener("input",e=>{const pos=e.target.selectionStart;searchTerm=e.target.value;render();const next=$("applicationSearch");next.focus();next.setSelectionRange(pos,pos);});
       $("applicationRole").addEventListener("change",e=>{roleFilter=e.target.value;render();});
+      bindSelectionControls([]);
       return;
     }
     const fields=[
@@ -82,15 +86,49 @@
       const whatsappNumber=whatsappDigits ? (whatsappDigits.startsWith("55") ? whatsappDigits : "55"+whatsappDigits) : "";
       const approvalMessage="Olá, "+(r.nick||"jogador")+"! Sua inscrição na HYDRA 7 foi aprovada! Seja bem-vindo(a) à família HYDRA 7. Em breve passaremos as próximas orientações. HONRA. UNIÃO. GUERRA.";
       const whatsappButton=whatsappNumber && normalizedStatus(r.status)==="aprovado" ? '<a class="whatsapp-button" href="https://api.whatsapp.com/send?phone='+whatsappNumber+'&text='+encodeURIComponent(approvalMessage)+'" target="_blank" rel="noopener noreferrer">ENVIAR APROVAÇÃO PELO WHATSAPP</a>' : "";
-      return '<article class="application-card"><div class="application-top"><div><p class="public-meta">INSCRIÇÃO #'+esc(r.id)+'</p><h3>'+esc(r.nick)+'</h3>'+(r.nome_completo?'<p class="application-realname">'+esc(r.nome_completo)+'</p>':'')+'<p class="application-status">'+esc(r.status||"Pendente")+'</p></div><div class="row-actions">'+whatsappButton+'<button data-detail="'+i+'">VER DETALHES</button>'+(normalizedStatus(r.status)==="aprovado"||normalizedStatus(r.status)==="reprovado"?'':'<button data-approve="'+esc(r.id)+'">APROVAR</button><button data-reject="'+esc(r.id)+'">REPROVAR</button>')+addButton+'<button class="danger" data-delete="'+esc(r.id)+'">EXCLUIR</button></div></div><div class="application-details" id="details-'+i+'" hidden>'+fields.map(([key,label])=>'<div><b>'+label+'</b><span>'+esc(pretty(r[key]))+'</span></div>').join("")+'</div></article>';
+      return '<article class="application-card"><div class="application-top"><div>'+(selectionMode?'<label class="application-select"><input type="checkbox" data-select-application="'+esc(r.id)+'" '+(selectedIds.has(String(r.id))?"checked":"")+'><span>SELECIONAR</span></label>':"")+'<p class="public-meta">INSCRIÇÃO #'+esc(r.id)+'</p><h3>'+esc(r.nick)+'</h3>'+(r.nome_completo?'<p class="application-realname">'+esc(r.nome_completo)+'</p>':'')+'<p class="application-status">'+esc(r.status||"Pendente")+'</p></div><div class="row-actions">'+whatsappButton+'<button data-detail="'+i+'">VER DETALHES</button>'+(normalizedStatus(r.status)==="aprovado"||normalizedStatus(r.status)==="reprovado"?'':'<button data-approve="'+esc(r.id)+'">APROVAR</button><button data-reject="'+esc(r.id)+'">REPROVAR</button>')+addButton+'<button class="danger" data-delete="'+esc(r.id)+'">EXCLUIR</button></div></div><div class="application-details" id="details-'+i+'" hidden>'+fields.map(([key,label])=>'<div><b>'+label+'</b><span>'+esc(pretty(r[key]))+'</span></div>').join("")+'</div></article>';
     }).join("");
     $("applicationSearch").addEventListener("input",e=>{const pos=e.target.selectionStart;searchTerm=e.target.value;render();const next=$("applicationSearch");next.focus();next.setSelectionRange(pos,pos);});
     $("applicationRole").addEventListener("change",e=>{roleFilter=e.target.value;render();});
+    bindSelectionControls(visible);
     $("applications").querySelectorAll("[data-detail]").forEach(b=>b.addEventListener("click",()=>{const el=$("details-"+b.dataset.detail);el.hidden=!el.hidden;b.textContent=el.hidden?"VER DETALHES":"OCULTAR DETALHES";}));
     $("applications").querySelectorAll("[data-approve]").forEach(b=>b.addEventListener("click",()=>setStatus(b.dataset.approve,"Aprovado")));
     $("applications").querySelectorAll("[data-reject]").forEach(b=>b.addEventListener("click",()=>setStatus(b.dataset.reject,"Reprovado")));
     $("applications").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>remove(b.dataset.delete)));
     $("applications").querySelectorAll("[data-add-member]").forEach(b=>b.addEventListener("click",()=>addMemberToSite(b.dataset.addMember)));
+  }
+  function bindSelectionControls(visible) {
+    const toggle=$("toggleSelection");
+    if(toggle) toggle.addEventListener("click",()=>{
+      selectionMode=!selectionMode;
+      if(!selectionMode) selectedIds.clear();
+      render();
+    });
+    const selectAll=$("selectAllApplications");
+    if(selectAll) {
+      selectAll.checked=visible.length>0 && visible.every(r=>selectedIds.has(String(r.id)));
+      selectAll.addEventListener("change",()=>{
+        visible.forEach(r=>selectAll.checked?selectedIds.add(String(r.id)):selectedIds.delete(String(r.id)));
+        render();
+      });
+    }
+    $("applications").querySelectorAll("[data-select-application]").forEach(input=>input.addEventListener("change",()=>{
+      input.checked?selectedIds.add(String(input.dataset.selectApplication)):selectedIds.delete(String(input.dataset.selectApplication));
+      render();
+    }));
+    const deleteButton=$("deleteSelectedApplications");
+    if(deleteButton) deleteButton.addEventListener("click",async()=>{
+      const ids=[...selectedIds];
+      if(!ids.length) return;
+      if(!confirm("Excluir definitivamente "+ids.length+" inscrição(ões) selecionada(s)? Esta ação não pode ser desfeita.")) return;
+      deleteButton.disabled=true;
+      const {error}=await db.from("inscricoes_f7").delete().in("id",ids);
+      if(error){message("Não foi possível excluir as inscrições: "+error.message,true);return;}
+      selectedIds.clear();
+      selectionMode=false;
+      message(ids.length+" inscrição(ões) excluída(s).");
+      await load();
+    });
   }
   async function setStatus(id,status) {
     const {error}=await db.from("inscricoes_f7").update({status}).eq("id",id);
