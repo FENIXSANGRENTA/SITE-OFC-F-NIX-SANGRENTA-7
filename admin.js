@@ -161,7 +161,7 @@
     $("lineMemberToggle").addEventListener("click",()=>{$("lineMemberDropdown").hidden=!$("lineMemberDropdown").hidden;});
     $("lineModalSearch").addEventListener("input",ev=>{
       const term=normalizeSearch(ev.target.value);
-      overlay.querySelectorAll(".line-modal-member").forEach(el=>{el.hidden=!normalizeSearch(el.textContent).includes(term);});
+      overlay.querySelectorAll(".line-modal-member").forEach(el=>{el.hidden=!normalizeSearch(el.querySelector(".line-modal-member-pick").textContent).includes(term);});
     });
     $("saveLinePlayers").addEventListener("click",async()=>{
       const chosen=checkboxes();
