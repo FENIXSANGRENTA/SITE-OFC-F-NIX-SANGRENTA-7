@@ -59,12 +59,18 @@
       const roster=lineLinks.map(link=>{
         const member=(members||[]).find(m=>String(m.id)===String(link.membro_id));
         if(!member)return null;
-        return {name:member.nick||member.nome||"Jogador",role:link.funcao||member.funcao||""};
+        const role=link.funcao||member.funcao||"";
+        const key=roleKey(role);
+        const targets={rush:125,cura:70,gas:70,suporte:70};
+        return {name:member.nick||member.nome||"Jogador",role,target:targets[key]??null};
       }).filter(Boolean);
+      const allTargetsKnown=roster.length>0&&roster.every(player=>player.target!==null);
+      const lineTarget=allTargetsKnown?roster.reduce((sum,player)=>sum+player.target,0):null;
       const rosterHtml=roster.length
-        ? '<div class="public-line-roster">'+roster.map(player=>'<div class="public-line-player"><span>'+esc(player.name)+'</span>'+(player.role?'<strong>'+esc(player.role)+'</strong>':'')+'</div>').join("")+'</div>'
+        ? '<div class="public-line-roster">'+roster.map(player=>'<div class="public-line-player"><span>'+esc(player.name)+'</span><div class="public-line-player-info">'+(player.role?'<strong>'+esc(player.role)+'</strong>':'<strong>FUNÇÃO NÃO DEFINIDA</strong>')+(player.target!==null?'<small>Meta: '+player.target+' pts</small>':'<small class="target-pending">Meta pendente</small>')+'</div></div>').join("")+'</div>'
         : '<p class="public-line-empty">Line em formação</p>';
-      return '<article class="public-card public-line-card"><div class="public-card-mark">HYDRA 7</div><h3>'+esc(line.nome)+'</h3>'+rosterHtml+(line.descricao?'<p>'+esc(line.descricao)+'</p>':'')+'</article>';
+      const targetHtml=allTargetsKnown?'<p class="public-line-target">META TOTAL DA LINE <strong>'+lineTarget+' PONTOS</strong></p>':'<p class="public-line-target target-pending">META DA LINE PENDENTE: confira as funções dos integrantes.</p>';
+      return '<article class="public-card public-line-card"><div class="public-card-mark">HYDRA 7</div><h3>'+esc(line.nome)+'</h3>'+rosterHtml+targetHtml+(line.descricao?'<p>'+esc(line.descricao)+'</p>':'')+'</article>';
     }).join("");
     $("publicLines").innerHTML=html;
   }
