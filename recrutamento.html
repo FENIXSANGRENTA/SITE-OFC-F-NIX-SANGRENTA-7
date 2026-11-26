@@ -19,6 +19,8 @@
     <h1>FAÇA PARTE DA <span>HYDRA 7</span></h1>
     <p class="recruitment-intro">Mostre seu potencial e venha fortalecer nossa organização. Preencha sua inscrição com atenção; a equipe administrativa fará a avaliação.</p>
     <div class="notice"><strong>ATENÇÃO, CANDIDATO</strong><br>Informe dados verdadeiros e mantenha seu WhatsApp disponível. O envio da inscrição não garante aprovação automática.</div>
+
+    <div class="notice target-notice"><strong>METAS MÍNIMAS POR FUNÇÃO</strong><br>Rush: 125 pontos · Cura: 70 pontos · Gás: 70 pontos · Suporte: 70 pontos.<br><strong>ATENÇÃO:</strong> a participação nas GG é obrigatória para todos os membros.</div>
     <form id="recruitmentForm">
       <h2 class="form-section-title">01 / IDENTIFICAÇÃO DO JOGADOR</h2>
       <label class="field"><span>NOME COMPLETO *</span><input name="nome_completo" maxlength="100" required placeholder="Seu nome completo"></label>
@@ -61,6 +63,11 @@
     button.disabled=true;button.textContent="ENVIANDO...";
     message.className="admin-message";message.textContent="Enviando sua inscrição...";
     const fd=new FormData(form);
+    if(fd.get("disponibilidade_guerras")!=="true"){
+      message.className="admin-message error";
+      message.textContent="A participação nas GG é obrigatória para fazer parte da HYDRA 7. Selecione Sim para continuar.";
+      button.disabled=false;button.textContent="ENVIAR PARA A AVALIAÇÃO";return;
+    }
     const payload={
       nome_completo:String(fd.get("nome_completo")).trim(),
       nick:String(fd.get("nick")).trim(),
