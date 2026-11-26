@@ -212,3 +212,22 @@
 .public-line-player span{font-weight:700;color:#f4f4f4}
 .public-line-player strong{flex:none;padding:4px 8px;border:1px solid rgba(240,24,45,.45);border-radius:5px;color:#ff6574;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
 .public-line-empty{margin:14px 0;color:#aaa;font-size:13px}
+
+
+/* Metas competitivas HYDRA 7 e redes sociais */
+.target-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:24px 0 14px}
+.target-card{display:flex;flex-direction:column;gap:10px;padding:19px;background:linear-gradient(145deg,#191c25,#0d0f14);border:1px solid #343946;border-top:3px solid #f0182d;border-radius:10px}
+.target-card span{color:#ff929b;font-size:10px;font-weight:900;letter-spacing:1.5px}
+.target-card strong{color:#fff;font-size:clamp(24px,4vw,34px);font-weight:900}
+.target-card strong small{color:#aeb4c1;font-size:10px;letter-spacing:1px}
+.target-mandatory{margin:14px 0 0;padding:13px;background:#291219;border:1px solid #642532;border-radius:7px;color:#ff929b;text-align:center;font-size:11px;font-weight:900;letter-spacing:1px}
+.target-notice{line-height:1.9}
+.social-links{display:flex;gap:10px;flex-wrap:wrap}
+.social-links a{padding:9px 12px;border:1px solid #454b59;border-radius:6px;color:#ff929b;font-size:10px;font-weight:900;letter-spacing:1px;text-decoration:none}
+.social-links a:hover{border-color:#f0182d;background:#f0182d18}
+.public-line-player-info{display:flex;align-items:flex-end;flex-direction:column;gap:4px;flex:none}
+.public-line-player-info small{color:#c7cbd4;font-size:10px;font-weight:800}
+.public-line-player-info .target-pending,.target-pending{color:#ff929b}
+.public-line-target{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0 0;padding:12px;background:#291219;border:1px solid #642532;border-radius:7px;color:#ff929b;font-size:10px;font-weight:900;letter-spacing:.7px}
+.public-line-target strong{color:#fff;font-size:15px;white-space:nowrap}
+@media(max-width:650px){.target-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.public-line-target{align-items:flex-start;flex-direction:column}.public-line-player-info{align-items:flex-end}}
